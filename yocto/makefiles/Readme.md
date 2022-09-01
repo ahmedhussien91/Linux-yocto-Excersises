@@ -1,3 +1,11 @@
+# todo 
+- make is binary( > which make ), program that parses what you write and execute your code
+- target : dependency , are considered by default files, .PHONY: for commands
+- make is not only about C it execute any command that you write
+- tabs and structures are important
+- make has functions that simplifies your life Ex. $(shell )
+- make is written to simplify your life 
+
 # 1. Make Files
 
 
