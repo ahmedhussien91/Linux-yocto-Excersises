@@ -1,10 +1,3 @@
-# TODO 
-
-- arc -> archive .a 
-- objdump 
-- file command
-- find files that you use to compile application (toolchain header files)
-
 # 1. building native application 
 
 The target of this practice is to show the work off native tool-chain and try some of it's files and features
@@ -16,7 +9,7 @@ The target of this practice is to show the work off native tool-chain and try so
 - kernel headers
 - gdp debugger
 
-## Compilation using gcc
+## Compilation using gcc (folder 1/)
 
 - identifying your **gcc** compiler
 
@@ -133,5 +126,90 @@ ls -l
 
 
 
-## using arc 
+## using arc
 
+- you can build a `.a` library using command `arc` 
+- `.a` file is an archive file of multiple `.o` files that doesn't contain a `main()` 
+
+### why to use libraries ? 
+
+- you are not always providing the whole component you can provide only a library
+- libraries are easier if they are integrated in multiple components 
+
+- .... 
+
+### creating static libraries using ar  (folder 2/)
+
+- `ar` can group a set of object files into a single `.a` library file  
+- Ex. using the `.o` files to generate `.a` file using command
+
+```sh
+cd lib
+ar -rcs liberror.a get_num.o error_functions.o
+ls
+```
+
+> error_functions.o  get_num.o  liberror.a
+
+#### using static library 
+
+- To compile `main.c` using `liberror.a` library
+
+  ```sh
+  # generate main.o
+  gcc -c main.c -I./include 
+  # generate test executable
+  gcc -o test main.o lib/liberror.a 
+  ```
+
+  -  `.a` library and `.h` files needed to be supplied to the user of the package 
+
+### creating dynamic libraries with gcc  (folder 3/)
+
+- you can also create a dynamic library that can link with multiple applications in **runtime** 
+- dynamic libraries is to exist as a part of system package 
+- dynamic libraries don't duplicate code size while linking with multiple applications
+- see this [Tutorial](https://docencia.ac.upc.edu/FIB/USO/Bibliografia/unix-c-libraries.html)
+
+- to create a dynamic library we have to recompile the same applications with `-fpic` (position independent code)
+
+  ```sh 
+  # making `foo` library 
+  gcc -c -g -Wall -fPIC foo.c  
+  gcc -shared -o libfoo.so foo.o
+  ```
+
+- compile application with shared library 
+
+  ```sh
+  # main.o
+  gcc -c main.c
+  # link application with shared library 
+  # `-L` add current director of libraries search path
+  # `-l` link with foo library
+  gcc main.o -L. -lfoo -o test
+  # same thing, libfoo.so must be in current directory
+  gcc main.o libfoo.so -o test
+  ```
+
+- run application 
+
+  ```sh 
+  ./test
+  ```
+
+  > ./test: error while loading shared libraries: libfoo.so: cannot open shared object file: No such file or directory
+
+- we need to set the variable `LD_LIBRARY_PATH` to the `libfoo.so` folder path for the **dynamic system loader** to find our shared libraries
+
+  ```sh
+  # go to current directory of `libfoo.so` then
+  LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
+  export LD_LIBRARY_PATH
+  ./test
+  ```
+
+  > This is a shared library test...
+  > Hello, I am a shared library
+
+  
