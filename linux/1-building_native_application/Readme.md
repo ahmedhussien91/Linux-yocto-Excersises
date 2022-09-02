@@ -8,7 +8,7 @@
 # 1. building native application 
 
 The target of this practice is to show the work off native tool-chain and try some of it's files and features
-Remember the tool-chain consists of:
+**Remember** the tool-chain consists of:
 
 - binutils
 - gcc compiler
@@ -18,7 +18,7 @@ Remember the tool-chain consists of:
 
 ## Compilation using gcc
 
-- identifying your gcc compiler
+- identifying your **gcc** compiler
 
 ```sh
 gcc -dumpmachine
@@ -27,7 +27,7 @@ gcc -dumpmachine
 
 
 
-### compilation using gcc 
+### 1. compilation using gcc 
 
 To compile the application we will follow the normal procedures
 - compile each file into object
@@ -68,7 +68,7 @@ gcc -c -v -g -Wall get_num.c
 
 
 
-# using some of binutils
+# 2. using some of binutils
 
 arc -> archive
 
