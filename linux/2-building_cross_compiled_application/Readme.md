@@ -221,3 +221,29 @@ Remember:
 
     > -rwxrwxr-x 1 ahmed ahmed  20932 سبت  2 23:58 test
     > -rwxrwxr-x 1 ahmed ahmed 121072 سبت  3 00:11 test_static
+
+- try executing file on your machine 
+
+  ```sh
+  ./test
+  ```
+
+  > bash: ./test: cannot execute binary file: Exec format error
+
+  - we can execute it using qemu
+
+    ```sh 
+    sudo apt install qemu-user
+    qemu-arm test
+    ```
+
+    > /lib/ld-uClibc.so.0: No such file or directory
+
+    - we need to tell qemu where is the libraries to link with 
+
+      ```sh 
+      qemu-arm -L ~/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/ test
+      ```
+
+      > ERROR  [ENOENT No such file or directory] 
+
