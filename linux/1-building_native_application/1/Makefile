@@ -30,7 +30,7 @@ $(TARGET): $(OBJECTS)
 	gcc -o $@ $^ $(LDLIBS) 
 
 clean:
-	@rm -f $(TARGET) $(OBJECTS) 
+	@rm -f $(TARGET) $(TARGET)_stripped $(OBJECTS) 
 
 help: printvars helpsummary
 
