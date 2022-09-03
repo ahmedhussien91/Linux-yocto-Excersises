@@ -7,6 +7,8 @@ contain the AMIT linux yocto excersises
 
 ### 2. [building_cross_compiled_application](linux/2-building_cross_compiled_application/Readme.md)
 
+### 3. [Uboot](linux/3-uboot/Readme.md)
+
 
 
 ## Yocto Excersise
