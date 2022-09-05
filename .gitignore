@@ -16,6 +16,8 @@
 *.gch
 *.pch
 
+linux/4-linux_cross_compilation/rootfs/
+
 # Libraries
 *.lib
 *.a

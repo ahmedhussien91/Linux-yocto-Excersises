@@ -132,6 +132,8 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   - one partition that fills the rest of the SD card image / linux /data file system 
   - then `write` to apply changes
 
+  > Syncing disks.
+
 - use loop driver to emulate block devices for this image and it's partitions
 
   ```sh
@@ -143,6 +145,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   - -f: finds a free loop device
   - --show: show the loop device that is used
   - --partscan: scans the loop device for partitions and creates additional /dev/loop\<x>p\<y> block devices
+  - note: a loop device is a regular file or device that is mounted as a file system. It may be thought of as a "pseudo device" because the operating system kernel treats the file's contents as a block device.
 
 - format the first partition(p1) as FAT16 with a boot label 
 
@@ -153,7 +156,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   > mkfs.fat 4.1 (2017-01-24)
   > mkfs.fat: warning - lowercase labels might not work properly with DOS or Windows
 
-- release the loop device 
+- release the loop device after finishing
 
   ```sh 
   sudo losetup -d /dev/loop<x>
@@ -205,6 +208,40 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   -sd sd.img \
   -net tap,script=./qemu-ifup -net nic
   ```
+
+  > WARNING: Image format was not specified for 'sd.img' and probing guessed raw.
+  >          Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
+  >          Specify the 'raw' format explicitly to remove the restrictions.
+  > pulseaudio: set_sink_input_volume() failed
+  > pulseaudio: Reason: Invalid argument
+  > pulseaudio: set_sink_input_mute() failed
+  > pulseaudio: Reason: Invalid argument
+  >
+  >
+  > U-Boot 2020.04 (Sep 03 2022 - 18:53:44 +0200)
+  >
+  > DRAM:  128 MiB
+  > WARNING: Caches not enabled
+  > Flash: 128 MiB
+  > MMC:   MMC: 0
+  > Loading Environment from FAT... *** Warning - bad CRC, using default environment
+  >
+  > In:    serial
+  > Out:   serial
+  > Err:   serial
+  > Net:   smc911x-0
+  > Hit any key to stop autoboot:  0 
+  > MMC Device 1 not found
+  > no mmc device at slot 1
+  > switch to partitions #0, OK
+  > mmc0 is current device
+  > Scanning mmc 0:1...
+  > smc911x: MAC 52:54:00:12:34:56
+  > smc911x: detected LAN9118 controller
+  > smc911x: phy initialized
+  > smc911x: MAC 52:54:00:12:34:56
+  > BOOTP broadcast 1
+  > DHCP client bound to address 10.0.2.15 (1 ms)
 
   - -net tab: create a software network interface on the host side
   - -net nic: adds a network interface to the emulated machine 
