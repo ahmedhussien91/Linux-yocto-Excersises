@@ -224,26 +224,58 @@ under **tmp/** you can find also:
 
 ## Downloading images to target
 
+### Preparing your SD card
+
 we need now to flash the output image to SD card of raspberry pi, but first let's have a look at how is the raspberrypi boot sequance ?
 
 ![Screenshot from 2022-09-08 05-12-24](readme.assets/Screenshot from 2022-09-08 05-12-24.png)
 
 goto `build/tmp/deploy/images/\<raspberrypi>/bootfiles` you will find all the files mentioned in the boot sequence diagram.
 
-you can modify  `config.txt` to enable and disable some HW from bootloader, also `cmdline.txt` to pass arguments(parameters to kernel) 
+you can modify  `config.txt` to enable and disable some HW from bootloader, also `cmdline.txt` to pass arguments (parameters to kernel) 
 
 we need to setup our SD card to have two partitions as we did before:
 
-1- boot partition, formated as fat32 and have all the `bootfiles` folder + dtp files + system image
+1- `boot` partition, formated as fat32 and have all the `bootfiles` folder + dtp files + system image
 
-2- rootfs partition formated as ext4 and have the files system (actually depending on your file system format you will have to format your SD card)
+2- `rootfs`partition formated as ext4 and have the files system (actually depending on your file system format you will have to format your SD card)
 
 
 
 ```sh
+# format the SD card to have two partitions
+# list block devices
+lsblk
+# identify your block(sdb) and delete all of its partitions 
+sudo fdisk /dev/sdb
+# make your partitions as the image below and write then quit
 ```
 
->
+![image-20220910221002529](readme.assets/image-20220910221002529.png)
+
+>Syncing disks.
+
+`raspberrypi` (boot) folder must contain 
+
+![image-20220910221559188](readme.assets/image-20220910221559188.png)
+
+rootfs is ext3 and must contain the extracted root filesystem 
+
+### letting Yocto prepare SD card for us
+
+we just add to `local.conf` this line 
+
+```sh
+IMAGE_FSTYPES +="rpi-sdimg"
+```
+
+this will output a single binary file `core-image-minimal-raspberrypi2.rpi-sdimg` that can be flashed directly through the command 
+
+```sh
+sudo dd if=tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2.rpi-sdimg of=/dev/sdb
+```
+
+
 
 
 
