@@ -2,7 +2,7 @@
 
 ## downloading linux
 
-- downloading linux from git and checkout a stable version
+- downloading linux from git and checkout a **stable** version -> linus **torvalds** tree
 
 ```sh
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
@@ -37,6 +37,8 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
   ```
 
   - add `CONFIG_DEVTMPFS_MOUNT` to your configuration.
+    - [`devtmpfs`](http://lwn.net/Articles/330985/) is a file system with automated device nodes populated by the kernel. 
+    -  let the kernel populates the appropriate information based on the known devices.
   - change kernel compression from Gzip to XZ
 
 - need to install those packages
@@ -54,7 +56,43 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
   >   OBJCOPY arch/arm/boot/zImage
   >   Kernel: arch/arm/boot/zImage is ready
 
+  output of the kernel here is:
+
+  - kernel image, `arch/arm/boot/zImage`
+  - .dtb -> compiled DTS, `arch/arm/boot/dts/*-ca9.dtb`
+
+  
+
+  
+
+  NOTE: you can also generate .ko modules build and  install it using `make modules && make modules_install` then transfer it to target and load it using:
+
+  - `insmod` load modules without dependencies
+  - `modprobe` load modules with all dependencies of top modules
+  - `lsmod` display the list of loaded modules  
+  - `modinfo` get information about a module without loading it: parameters, license, description and dependencies
+  - `rmmod` tries to remove the given module, `modprobe -r` tries to remove the given top module and its no longer needed dependencies 
+  - module parameters -> `/sys/module/\<name>/parameters`
+  - dependencies described in ->  `/lib/modules/<kernel-version>/modules.dep`  
+
+
 ## use u-boot to download and boot the kernel
+
+### booting kernel with UBOOT Information:
+
+- Uboot has an important variable that is passed to kernel `bootargs`
+  - This variable carry **kernel command line**, which is parameters passed to kernel before starting to allow runtime configuration
+    - parameters is saved in  a chosen section in Device Tree
+    - a list of parameters can be found [here](https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html)
+- U-boot can directly boot the zImage binary, typical process is to
+  - load kernel (zImage) at address X in memory
+  - load \<board>.dtb at address Y in memory
+  - Start kernel with `bootz X - Y`
+    - `-` indicates no initramfs
+
+
+
+### practical
 
 - copy image + dtb to `tftp` default directory 
 
@@ -117,6 +155,10 @@ you can do this automatically, so the bootloader will always load the kernel and
 setenv bootcmd 'tftp 0x61000000 zImage; tftp 0x62000000 vexpress-v2p-ca9.dtb; bootz 0x61000000 - 0x62000000'
 saveenv
 ```
+
+
+
+
 
 ## Tiny Embedded system with BusyBox 
 

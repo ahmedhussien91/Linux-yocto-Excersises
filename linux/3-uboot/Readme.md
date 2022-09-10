@@ -145,7 +145,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   - -f: finds a free loop device
   - --show: show the loop device that is used
   - --partscan: scans the loop device for partitions and creates additional /dev/loop\<x>p\<y> block devices
-  - note: a loop device is a regular file or device that is mounted as a file system. It may be thought of as a "pseudo device" because the operating system kernel treats the file's contents as a block device.
+  - note: a **loop device** is a regular file or device that is mounted as a file system. It may be thought of as a "pseudo device" because the operating system kernel treats the file's contents as a block device.
 
 - format the first partition(p1) as FAT16 with a boot label 
 
