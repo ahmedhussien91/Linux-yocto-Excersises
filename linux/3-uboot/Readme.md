@@ -337,3 +337,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   >61000070: 00000000 00000000 00000000 00000000    ................
 
   
+
+# loading image through fat partition             (ToDo)
+
+setenv bootcmd 'fatload mmc 0:1 0x60000000 zImage; fatload mmc 0:1 0x61000000 vexpress-v2p-ca9.dtb; bootz 0x60000000 - 0x61000000'

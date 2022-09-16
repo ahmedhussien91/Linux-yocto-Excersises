@@ -365,6 +365,7 @@ see `examples/inittab` file in `busybox` sources, copy `examples/inittab` to `/e
 create `/etc/init.d/rcS` startup script and in this script mount `/proc` `/sys` filesystems:
 
 ```sh 
+#!/bin/sh
 # mount a filesystem of type `proc` to /proc
 mount -t proc nodev /proc
 # mount a filesystem of type `sysfs` to /sys
