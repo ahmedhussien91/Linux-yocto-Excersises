@@ -232,6 +232,15 @@ bitbake -f openssh
 
 
 
+To see which kernel is used, dry-run BitBake:
+```sh 
+bitbake -vn virtual/kernel
+```
+
+> ...
+>
+> NOTE: selecting linux-raspberrypi to satisfy virtual/kernel due to PREFERRED_PROVIDERS
+
 
 
 ## Clean Sstate cache:
@@ -243,6 +252,53 @@ bitbake -f openssh
 
 
 # mount rootfs over network 
+it is not practical at all to reflash the root filesystem on the target everytime a change is made. so we can set the RFS to be on the network.
+
+### Configure Target
+
+we need also to check linux kernel configuration for enabling the Network file system is enabled by using   
+
+```sh 
+bitbake -c menuconfig virtual/kernel
+```
+
+check that 
+
+- `CONFIG_NFS_FS=y`, NFS client support
+
+- `CONFIG_IP_PNP=y`, configure IP at boot time
+
+- `CONFIG_ROOT_NFS=y`, support for NFS as rootfs
+
+save and force rebuild of kernel then build image core-minimal-image again  
+
+```sh
+bitbake -c savedefconfig virtual/kernel //savedefconfig
+bitbake -f virtual/kernel // run the linux build again
+bitbake core-image-minimal 
+```
+
+
+
+To configure this we need to set the bootloader to pass the kernel parameters to set RFS on network as follows, in our case we will change "cmdline.txt" on the sdcard to this value
+
+```sh
+root=/dev/nfs rw console=tty1,115200 nfsroot=192.168.0.6:/nfs ip=192.168.0.100:::::eth0
+```
+
+
+
+### Configure Host
+
+```sh
+# Install an NFS server
+sudo apt install nfs-kernel-server
+# add exported directory to `/etc/exports` file, with target ip as follows
+/nfs 192.168.0.100(rw,no_root_squash,no_subtree_check)
+# ask you NFS server to apply this new configuration (reload this file)
+sudo exportfs -r
+```
+
 
 
 
