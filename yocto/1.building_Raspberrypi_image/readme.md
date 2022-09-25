@@ -45,15 +45,15 @@ NOTE:
 
 **documentation**: All documentation sources for the Yocto Project documentation. you can build those to pdf documents.
 
-**meta**: Contains the OpenEmbedded-Core metadata.
+**meta**: Contains the **OpenEmbedded-Core metadata**.
 
-**meta-skeleton**: Contains template recipes for BSP and kernel development.
+**meta-skeleton**: Contains **template** recipes for BSP and kernel development.
 
-**meta-poky**: Holds the configuration for the Poky reference distribution.
+**meta-poky**: Holds the configuration for the **Poky** reference **distribution**.
 
 **meta-yocto-bsp**: Configuration for the Yocto Project reference hardware board support package
 
-**oe-init-build-env**: Script to set up the OpenEmbedded build environment.  This script has to be sourced before you start working.
+**oe-init-build-env**: Script to set up the **OpenEmbedded build environment**.  This script has to be sourced before you start working.
 
 **scripts**: Contain scripts used to setup the environment, development tools and tools to flash the generated images on target.
 
@@ -92,7 +92,7 @@ source ./oe-init-build-env # would generate folder `build` if variable wasnot pa
 - **meta-toolchain**: Includes development headers and libraries to develop directly on the target
 - **meta-ide-support**: Generates the corss-toolchain. Useful when working with the SDK
 
-SATO User interface
+SATO User interface:
 
 ![Yocto Project Quick Start Guide for Ubuntu - CNX Software](readme.assets/yocto_sato_ui_qemu.png)
 
@@ -117,7 +117,9 @@ why to set configuration inside the `build` folder ?
 
 ​	The idea is that you can have same layers, same poky, and build with different configurations, different layers, machines, changing some variables 
 
-[Variables link](https://docs.yoctoproject.org/ref-manual/variables.html)
+[Variables link](https://docs.yoctoproject.org/ref-manual/variables.html)configuration variables relative to the current user for the build. Configuration variables can be overridden there.
+
+w
 
 #### bblayer.conf
 
@@ -156,8 +158,10 @@ we need also to configure our local.conf varaibles:
 # This sets the default machine to be qemux86-64 if no other machine is selected:
 #MACHINE ??= "qemux86-64"
 MACHINE = "raspberrypi2"
-BB_NUMBER_THREADS = 8
-PARALLEL_MAKE = 8
+BB_NUMBER_Tconfiguration variables relative to the current user for the build. Configuration variables can be overridden there.
+
+wHREADS = "8"
+PARALLEL_MAKE = "8"
 ...
 
 ```
@@ -272,7 +276,7 @@ IMAGE_FSTYPES +="rpi-sdimg"
 this will output a single binary file `core-image-minimal-raspberrypi2.rpi-sdimg` that can be flashed directly through the command 
 
 ```sh
-sudo dd if=tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2.rpi-sdimg of=/dev/sdb
+sudo dd if=tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2.rpi-sdimg of=/dev/sdb bs=1M
 ```
 
 

@@ -300,8 +300,51 @@ sudo exportfs -r
 ```
 
 
+# Recipes syntax
+
+To start with playing and idetifying some recipes syntax we need to make a **new layer** to include multiple **recipes** that will help us testing recipes syntax. 
+
+## Inserting your custom application in new image
+
+### make new custom layer manually
+
+ To make a new layer we just create a new folder `meta-custom/` beside `poky/`, then we will introduced some files as follows:
+
+- it's usually advised to start your layer naming with `meta-` but not mandatory, we create the layer folder structure as follows
+
+```sh 
+mkdir meta-custom
+cd meta-custom
+mkdir conf
+cd conf
+echo "# Append conf and classes directory to BBPATH\n\
+BBPATH .= ":${LAYERDIR}"\n\
+\n\
+# add folder structure to recipes (.bb) to BBFILES variable\n\
+BBFILES += "${LAYERDIR}/recipes*/*/*.bb"\n\
+" > layer.conf
+cd .. #back to meta-custom folder
+mkdir recipes-lap1
+cd recipes-lap1
+mkdir custom-app
+cd custom-app
+```
+
+### Inserting our recipes
+
+let's write our first recipe in the `syntax-trails/` we will make a file `syntax-trail_1.0.bb` and include this code in it 
+
+```sh
+```
 
 
+
+ 
+
+### playing with recipes to identify some syntax
+
+```sh
+```
 
 
 # optimizing your image

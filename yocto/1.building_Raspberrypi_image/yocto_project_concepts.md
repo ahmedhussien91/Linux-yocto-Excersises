@@ -4,6 +4,8 @@
 
 # Bitbake
 
+This link worth reading: [overview-manual-concepts](https://docs.yoctoproject.org/3.2.3/overview-manual/overview-manual-concepts.html)
+
 ## input meta-data components:
 
 - ***Recipes**:* Provides details about particular pieces of software. (.**bb**, .**bbapend**, .**inc**)
@@ -85,3 +87,6 @@ place all your layers layer under poky folder:
 
 
 
+![image-20220918093801951](yocto_project_concepts.assets/image-20220918093801951.png)
+
+![image-20220918093850507](yocto_project_concepts.assets/image-20220918093850507.png)
