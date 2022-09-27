@@ -73,13 +73,12 @@ Remember:
   ./ct-ng menuconfig
   ```
 
-- pickup the following configurations
+- pickup the following configurations (you can search using `/`)
 
   - In `path and misc` options 
     - for  `Maximum log level to see:` chose DEBUG
   - In `C-library`
-    - set `C library` to `LIB_UCLIBC`(uclibc)
-    - you can also add support for IPv6 `LIBC_UCLIBC_IPV6`, `LIBC_UCLIBC_WCHAR` and `LIB_UCLIBC_HAS_SSP`
+    - set `C library` to `LIB_MUSL`(musl)
   - In `C compiler`:
     - make sure that you support C++ `CC_LANG_CXX`
   - In `debug facilities` 
