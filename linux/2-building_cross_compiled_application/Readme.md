@@ -94,6 +94,8 @@ Remember:
   - **output**: start building tool chain
   - notice `.build/` folder which is the output of the build 
 
+## checking toolchain output in `~/x-tools`
+
 - tool is installed inside `~/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/bin`, to use it add it to your path variable `PATH`
 
   ```sh 
@@ -101,23 +103,37 @@ Remember:
   arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -v
   ```
 
-  > Using built-in specs.
-  > COLLECT_GCC=arm-cortexa9_neon-linux-uclibcgnueabihf-gcc
-  > COLLECT_LTO_WRAPPER=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/lto-wrapper
+  > ...
   > Target: arm-cortexa9_neon-linux-uclibcgnueabihf
-  > Configured with: /home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/src/gcc/configure --build=x86_64-build_pc-linux-gnu --host=x86_64-build_pc-linux-gnu --target=arm-cortexa9_neon-linux-uclibcgnueabihf --prefix=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf --exec_prefix=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf --with-sysroot=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot --enable-languages=c,c++ --with-cpu=cortex-a9 --with-fpu=neon --with-float=hard --with-pkgversion='crosstool-NG 1.24.0.489_25f6dae' --enable-__cxa_atexit --disable-libmudflap --disable-libgomp --disable-libssp --disable-libquadmath --disable-libquadmath-support --disable-libsanitizer --disable-libmpx --with-gmp=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --with-mpfr=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --with-mpc=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --with-isl=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --enable-lto --enable-threads=posix --enable-plugin --enable-gold --with-libintl-prefix=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --disable-multilib --with-local-prefix=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot --enable-long-long
-  > Thread model: posix
-  > Supported LTO compression algorithms: zlib
-  > gcc version 11.2.0 (crosstool-NG 1.24.0.489_25f6dae) 
+  > ... --build=x86_64-build_pc-linux-gnu --host=x86_64-build_pc-linux-gnu --target=arm-cortexa9_neon-linux-uclibcgnueabihf 
+  >
+  > ... --with-sysroot=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot 
+  >
+  > ... --enable-languages=c,c++ --with-cpu=cortex-a9 --with-fpu=neon --with-float=hard 
+  >
+  > ... --with-pkgversion='crosstool-NG 1.24.0.489_25f6dae'
 
   **NOTE:**
 
-  - --build=x86_64-build_pc-linux-gnu
-  - --host=x86_64-build_pc-linux-gnu 
-  - --target=arm-cortexa9_neon-linux-uclibcgnueabihf 
-  - --with-sysroot=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot
-  - --enable-languages=c,c++
-  - notice also the compiler name contain: CPU-cpu_vairiant-kernel-CLIB_GNU_ABI_floatingPoint-programName
+  - **--build**=x86_64-build_pc-linux-gnu
+  - **--host**=x86_64-build_pc-linux-gnu 
+  - **--target**=arm-cortexa9_neon-linux-uclibcgnueabihf 
+  - **--with-sysroot**=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot
+  - **--enable-languages**=c,c++
+  - notice also the compiler name contain: **CPU-cpu_vairiant-kernel-CLIB_GNU_ABI_floatingPoint-programName**
+
+### sysroot folder
+
+You will find the following subdirectories in **sysroot**:
+
+- **lib**: Contains the **shared objects** for the **C library** and the **dynamic linker/loader**, ld-linux
+- **usr/lib**: The **static library archive files** for the **C library**, and any other libraries that may be installed subsequently
+- **usr/include**: Contains the headers for all the libraries
+- **usr/bin**: Contains the **utility programs** that run on the target, such as the **ldd** command
+- **usr/share**: Used for **localization** and **internationalization**
+- **sbin**: Provides the **ldconfig** utility, used to optimize library loading paths
+
+
 
 ## Cross Compile using toolchain built (folder 1/)
 
@@ -127,39 +143,34 @@ Remember:
   arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -c -g -Wall error_functions.c -v
   ```
 
-  >sing built-in specs.
+  >...
   >COLLECT_GCC=arm-cortexa9_neon-linux-uclibcgnueabihf-gcc
   >Target: arm-cortexa9_neon-linux-uclibcgnueabihf
-  >Configured with: /home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/src/gcc/configure --build=x86_64-build_pc-linux-gnu --host=x86_64-build_pc-linux-gnu --target=arm-cortexa9_neon-linux-uclibcgnueabihf --prefix=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf --exec_prefix=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf --with-sysroot=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot --enable-languages=c,c++ --with-cpu=cortex-a9 --with-fpu=neon --with-float=hard --with-pkgversion='crosstool-NG 1.24.0.489_25f6dae' --enable-__cxa_atexit --disable-libmudflap --disable-libgomp --disable-libssp --disable-libquadmath --disable-libquadmath-support --disable-libsanitizer --disable-libmpx --with-gmp=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --with-mpfr=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --with-mpc=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --with-isl=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --enable-lto --enable-threads=posix --enable-plugin --enable-gold --with-libintl-prefix=/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/2-building_cross_compiled_application/crosstool-ng/.build/arm-cortexa9_neon-linux-uclibcgnueabihf/buildtools --disable-multilib --with-local-prefix=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot --enable-long-long
-  >Thread model: posix
-  >Supported LTO compression algorithms: zlib
+  >...
   >gcc version 11.2.0 (crosstool-NG 1.24.0.489_25f6dae) 
   >COLLECT_GCC_OPTIONS='-c' '-g' '-Wall' '-v' '-mcpu=cortex-a9' '-mfloat-abi=hard' '-mfpu=neon' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7-a+mp+sec+simd' '-march=armv7-a+mp+sec+simd'
-  > /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/cc1 -quiet -v error_functions.c -quiet -dumpbase error_functions.c -dumpbase-ext .c -mcpu=cortex-a9 -mfloat-abi=hard -mfpu=neon -mtls-dialect=gnu -marm -mlibarch=armv7-a+mp+sec+simd -march=armv7-a+mp+sec+simd -g -Wall -version -o /tmp/ccNn7WLZ.s
+  >... -mcpu=cortex-a9 -mfloat-abi=hard -mfpu=neon -mtls-dialect=gnu -marm -mlibarch=armv7-a+mp+sec+simd -march=armv7-a+mp+sec+simd -g -Wall -version -o /tmp/ccNn7WLZ.s
   >GNU C17 (crosstool-NG 1.24.0.489_25f6dae) version 11.2.0 (arm-cortexa9_neon-linux-uclibcgnueabihf)
-  >        compiled by GNU C version 9.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.0, isl version isl-0.24-GMP
+  >    compiled by GNU C version 9.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.0, isl version isl-0.24-GMP
   >
-  >GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-  >ignoring nonexistent directory "/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/include"
-  >#include "..." search starts here:
+  >     ...
   >#include <...> search starts here:
-  > /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/include
-  > /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/include-fixed
-  > /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/include
-  > /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/usr/include
-  >End of search list.
-  >GNU C17 (crosstool-NG 1.24.0.489_25f6dae) version 11.2.0 (arm-cortexa9_neon-linux-uclibcgnueabihf)
-  >        compiled by GNU C version 9.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.0, isl version isl-0.24-GMP
-  >
-  >GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-  >Compiler executable checksum: ce74491416c24d3e72247ce510182930
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/include
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/include-fixed
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/include
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/usr/include
+  > End of search list.
+  > GNU C17 (crosstool-NG 1.24.0.489_25f6dae) version 11.2.0 (arm-cortexa9_neon-linux-uclibcgnueabihf)
+  >    compiled by GNU C version 9.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.0, isl version isl-0.24-GMP
+  > 
+  >...
   >COLLECT_GCC_OPTIONS='-c' '-g' '-Wall' '-v' '-mcpu=cortex-a9' '-mfloat-abi=hard' '-mfpu=neon' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7-a+mp+sec+simd' '-march=armv7-a+mp+sec+simd'
-  > /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/bin/as -v -march=armv7-a+mp+sec -mfloat-abi=hard -mfpu=neon -meabi=5 -o error_functions.o /tmp/ccNn7WLZ.s
+  >     /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/bin/as -v -march=armv7-a+mp+sec -mfloat-abi=hard -mfpu=neon -meabi=5 -o error_functions.o /tmp/ccNn7WLZ.s
   >GNU assembler version 2.37 (arm-cortexa9_neon-linux-uclibcgnueabihf) using BFD version (crosstool-NG 1.24.0.489_25f6dae) 2.37
   >COMPILER_PATH=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/bin/
   >LIBRARY_PATH=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/lib/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/lib/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/usr/lib/
   >COLLECT_GCC_OPTIONS='-c' '-g' '-Wall' '-v' '-mcpu=cortex-a9' '-mfloat-abi=hard' '-mfpu=neon' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7-a+mp+sec+simd' '-march=armv7-a+mp+sec+simd'
-
+  
 - compile application using make 
 
   ```sh

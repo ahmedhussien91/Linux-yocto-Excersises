@@ -4,7 +4,7 @@
 # simplified by me Ah.hu.sabry@gmail.com
 
 # compiler
-CC := arm-cortexa9_neon-linux-uclibcgnueabihf-gcc
+CC := arm-cortexa9_neon-linux-musleabihf-gcc
 
 # Beware, This will create this application
 TARGET  := test
@@ -32,6 +32,7 @@ all: ${TARGET}
 $(TARGET): $(OBJECTS)
 	$(CC) -o $@ $^ $(LDLIBS) 
 
+.PHONY: clean
 clean:
 	@rm -f $(TARGET) $(TARGET)_stripped $(OBJECTS) 
 
