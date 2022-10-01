@@ -62,7 +62,7 @@ Remember:
 
   ```sh
   ./ct-ng list-samples
-  ./ct-ng arm-cortexa9_neon
+  ./ct-ng arm-cortexa9_neon-linux-gnueabihf
   ```
 
   
@@ -87,7 +87,7 @@ Remember:
 - build using 
 
   ```sh 
-  ct-ng build
+  ./ct-ng build
   ```
 
   - **output**: start building tool chain
