@@ -1,3 +1,11 @@
+# adding custom application
+
+
+
+# Creating custom image
+
+
+
 # Features
 
 please refer to [yocto Features Documentation link](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-features.html): provides a reference of shipped machine and distro features you can include as part of your image, a reference on image features you can select, and a reference on feature backfilling.
