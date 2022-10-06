@@ -10,7 +10,7 @@ We will describe the following steps in this document:
 
 3. write a recipe (**vsomeip_1.0.bb**) for compiling and integrating [vsomeip](https://github.com/COVESA/vsomeip) in our custom layer --> [3](#3. implement vsomeip recipe)
 
-4. write our custom image (**vsomeip-image.bb**) and include components included in (**core-image-base**) + "openssh" + "vsomeip"
+4. write our custom image (**vsomeip-image.bb**) and include components included in (**core-image-base**) + "openssh" + "vsomeip" --> [4]()
 
 5. bitbake new **vsomeip-image.bb** image and generate SDK
 
@@ -74,4 +74,53 @@ Use **S** variable to modify the source code location, **WORKDIR** contain the l
 ```sh
 S="${WORKDIR}/git"
 ```
+
+another thing to consider is that there may be some files that the bitbake won't identify to which package they are related. we use this syntax to tell the bitbake this information.
+to include files to output packages we use:
+
+```sh
+FILES_${PN} += "" to append extra files to package
+```
+
+  
+
+## 4. write our own image
+
+[up](#vsomeip project)
+
+we need now to create our image **vsomeip-image.bb** and base it on core-image-base
+
+to base our image on **core-image-base** we use the word **require** as in the example
+
+```sh
+require recipes-core/images/core-image-base.bb
+```
+
+we will also have to install our **vsomeip** application + **openssh** application for that we will have to append those to the **IMAGE_INSTALL** variable
+
+
+
+## 5. generate our image & SDK 
+
+[up](#vsomeip project)
+
+then we will bitbake our image and sdk using
+
+```sh
+bitbake vsomeip-image # create the image
+bitbake vsomeip-image -c populate_sdk # generate the installer of the SDK in the tmp/deploy/sdk folder
+# we will have to run the generated installer using the shell script inside tmp/deploy/sdk
+```
+
+we will have to run the generated installer using the shell script inside **tmp/deploy/sdk** 
+
+then inside the SDK we will source the environment to setup the environment for our application compilation 
+
+## 6. build our application
+
+
+
+## 7. start the image and application 
+
+## 8. run application on target 
 
