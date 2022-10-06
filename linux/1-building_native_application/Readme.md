@@ -344,10 +344,10 @@ to do this we:
 
 ```sh
 # copy to shared location
-cp ./lib/liberror.so /usr/lib/
+sudo cp ./lib/liberror.so /usr/lib/
 sudo chmod 0755 /usr/lib/liberror.so
 # update the linker configuration
-ldconfig # should update the cache file `/etc/ld.so.cache`
+sudo ldconfig # should update the cache file `/etc/ld.so.cache`
 #list all libraries in the configuration file
 ldconfig -p 
 ldconfig -p | grep liberror.so

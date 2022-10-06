@@ -5,3 +5,5 @@ git checkout 25f6dae84
 ./bootstrap
 ./configure --enable-local
 make
+./ct-ng arm-cortexa9_neon-linux-gnueabihf
+./ct-ng build
