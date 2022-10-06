@@ -323,7 +323,7 @@ BBPATH .= ":${LAYERDIR}"\n\
 # add folder structure to recipes (.bb) to BBFILES variable\n\
 BBFILES += "${LAYERDIR}/recipes*/*/*.bb"\n\
 " > layer.conf
-cd .. #back to meta-custom folder
+cd .. #back to meta-custom/ folder
 mkdir recipes-lap1
 cd recipes-lap1
 mkdir custom-app
@@ -347,7 +347,10 @@ let's write our first recipe in the `syntax-trails/` we will make a file `syntax
 ```
 
 
+
 # optimizing your image
+
+this is an answer to a stackoverflow question ([link](https://stackoverflow.com/questions/28765494/yocto-minimal-image-with-package-management)) 
 
 I can suggest you few things, which may help you to optimize size of rootfs:
 
