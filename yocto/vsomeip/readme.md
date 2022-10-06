@@ -56,30 +56,49 @@ remember that all variables are **Strings**, use **${}** to export variables
 remember that recipe **header** contains
 
 ```sh
-DESCRIPTION= "" #describes what the software is about
-HOMEPAGE= "" #URL to the project’s homepage
-PRIORITY= "" #defaults to optional
-SECTION= "" #package category (e.g. console/utils)
-LICENSE="" #the application’s license,
+#DESCRIPTION #describes what the software is about
+#HOMEPAGE #URL to the project’s homepage
+#PRIORITY #defaults to optional
+#SECTION #package category (e.g. console/utils)
+#LICENSE #the application’s license,
+# you can use 
+DESCRIPTION= "vsomeip libraries recipe"
+LICENSE="CLOSED"
 ```
 
 Use **SRC_URI** to download the [vsomeip](https://github.com/COVESA/vsomeip) repository, remember for git we use 
 
 ```sh
-git://<url>;protocol=<protocol>;branch=<branch>
+# git://<url>;protocol=<protocol>;branch=<branch>
+SRC_URI = "git://github.com/COVESA/vsomeip.git;protcol=https;branch=master"
 ```
 
-Use **S** variable to modify the source code location, **WORKDIR** contain the location of work directory, for git source code is placed under **git** folder, so we will use something like that 
+also our library depends on the **boost** library to build you can specify this in the library using variable **DEPENDS**
+
+```sh
+DEPENDS ="boost"
+```
+
+Use **S** variable to point to the source code location, remember that **WORKDIR** contain the location of work directory for this application(vsomeip), for git source code is placed under **git** folder, so we point to this folder using  
 
 ```sh
 S="${WORKDIR}/git"
+```
+
+our application builds using **cmake**, tasks to build cmake is already implemented in **cmake.bbclass** so we can use to include this in our recipe 
+
+```sh
+inherit cmake 
 ```
 
 another thing to consider is that there may be some files that the bitbake won't identify to which package they are related. we use this syntax to tell the bitbake this information.
 to include files to output packages we use:
 
 ```sh
-FILES_${PN} += "" to append extra files to package
+# FILES_${PN} += "" to append extra files to package
+# we can use 
+FILES_${PN}+="/usr/etc/*"
+FILES_${PN}-dev+="/usr/etc/*"
 ```
 
   
@@ -88,7 +107,11 @@ FILES_${PN} += "" to append extra files to package
 
 [up](#vsomeip project)
 
-we need now to create our image **vsomeip-image.bb** and base it on core-image-base
+we need now to create our image **vsomeip-image.bb** and base it on **core-image-base**
+
+our image needs to be in **meta-custom/recipes-core/images/vsomeip-image.bb**
+
+
 
 to base our image on **core-image-base** we use the word **require** as in the example
 
@@ -96,7 +119,13 @@ to base our image on **core-image-base** we use the word **require** as in the e
 require recipes-core/images/core-image-base.bb
 ```
 
+
+
 we will also have to install our **vsomeip** application + **openssh** application for that we will have to append those to the **IMAGE_INSTALL** variable
+
+```sh
+IMAGE_INSTALL += "openssh vsomeip"
+```
 
 
 
@@ -115,6 +144,8 @@ bitbake vsomeip-image -c populate_sdk # generate the installer of the SDK in the
 we will have to run the generated installer using the shell script inside **tmp/deploy/sdk** 
 
 then inside the SDK we will source the environment to setup the environment for our application compilation 
+
+
 
 ## 6. build our application
 
