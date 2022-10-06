@@ -95,18 +95,18 @@ Remember:
 
 ## checking toolchain output in `~/x-tools`
 
-- tool is installed inside `~/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/bin`, to use it add it to your path variable `PATH`
+- tool is installed inside `~/x-tools/arm-cortexa9_neon-linux-musleabihf/bin`, to use it add it to your path variable `PATH`
 
   ```sh 
-  PATH=$PATH:~/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/bin/
-  arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -v
+  PATH=$PATH:~/x-tools/arm-cortexa9_neon-linux-musleabihf/bin/
+  arm-cortexa9_neon-linux-musleabihf-gcc -v
   ```
 
   > ...
-  > Target: arm-cortexa9_neon-linux-uclibcgnueabihf
-  > ... --build=x86_64-build_pc-linux-gnu --host=x86_64-build_pc-linux-gnu --target=arm-cortexa9_neon-linux-uclibcgnueabihf 
+  > Target: arm-cortexa9_neon-linux-musleabihf
+  > ... --build=x86_64-build_pc-linux-gnu --host=x86_64-build_pc-linux-gnu --target=arm-cortexa9_neon-linux-musleabihf 
   >
-  > ... --with-sysroot=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot 
+  > ... --with-sysroot=/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/arm-cortexa9_neon-linux-musleabihf/sysroot 
   >
   > ... --enable-languages=c,c++ --with-cpu=cortex-a9 --with-fpu=neon --with-float=hard 
   >
@@ -116,8 +116,8 @@ Remember:
 
   - **--build**=x86_64-build_pc-linux-gnu
   - **--host**=x86_64-build_pc-linux-gnu 
-  - **--target**=arm-cortexa9_neon-linux-uclibcgnueabihf 
-  - **--with-sysroot**=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot
+  - **--target**=arm-cortexa9_neon-linux-musleabihf 
+  - **--with-sysroot**=/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/arm-cortexa9_neon-linux-musleabihf/sysroot
   - **--enable-languages**=c,c++
   - notice also the compiler name contain: **CPU-cpu_vairiant-kernel-CLIB_GNU_ABI_floatingPoint-programName**
 
@@ -139,35 +139,35 @@ You will find the following subdirectories in **sysroot**:
 - try compiling file with `-v` option
 
   ```sh
-  arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -c -g -Wall error_functions.c -v
+  arm-cortexa9_neon-linux-musleabihf-gcc -c -g -Wall error_functions.c -v
   ```
 
   >...
-  >COLLECT_GCC=arm-cortexa9_neon-linux-uclibcgnueabihf-gcc
-  >Target: arm-cortexa9_neon-linux-uclibcgnueabihf
+  >COLLECT_GCC=arm-cortexa9_neon-linux-musleabihf-gcc
+  >Target: arm-cortexa9_neon-linux-musleabihf
   >...
   >gcc version 11.2.0 (crosstool-NG 1.24.0.489_25f6dae) 
   >COLLECT_GCC_OPTIONS='-c' '-g' '-Wall' '-v' '-mcpu=cortex-a9' '-mfloat-abi=hard' '-mfpu=neon' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7-a+mp+sec+simd' '-march=armv7-a+mp+sec+simd'
   >... -mcpu=cortex-a9 -mfloat-abi=hard -mfpu=neon -mtls-dialect=gnu -marm -mlibarch=armv7-a+mp+sec+simd -march=armv7-a+mp+sec+simd -g -Wall -version -o /tmp/ccNn7WLZ.s
-  >GNU C17 (crosstool-NG 1.24.0.489_25f6dae) version 11.2.0 (arm-cortexa9_neon-linux-uclibcgnueabihf)
+  >GNU C17 (crosstool-NG 1.24.0.489_25f6dae) version 11.2.0 (arm-cortexa9_neon-linux-musleabihf)
   >    compiled by GNU C version 9.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.0, isl version isl-0.24-GMP
   >
   >     ...
   >#include <...> search starts here:
-  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/include
-  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/include-fixed
-  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/include
-  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/usr/include
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/include
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/include-fixed
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/../../../../arm-cortexa9_neon-linux-musleabihf/include
+  >/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/arm-cortexa9_neon-linux-musleabihf/sysroot/usr/include
   > End of search list.
-  > GNU C17 (crosstool-NG 1.24.0.489_25f6dae) version 11.2.0 (arm-cortexa9_neon-linux-uclibcgnueabihf)
+  > GNU C17 (crosstool-NG 1.24.0.489_25f6dae) version 11.2.0 (arm-cortexa9_neon-linux-musleabihf)
   >    compiled by GNU C version 9.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.0, isl version isl-0.24-GMP
   > 
   >...
   >COLLECT_GCC_OPTIONS='-c' '-g' '-Wall' '-v' '-mcpu=cortex-a9' '-mfloat-abi=hard' '-mfpu=neon' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7-a+mp+sec+simd' '-march=armv7-a+mp+sec+simd'
-  >     /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/bin/as -v -march=armv7-a+mp+sec -mfloat-abi=hard -mfpu=neon -meabi=5 -o error_functions.o /tmp/ccNn7WLZ.s
-  >GNU assembler version 2.37 (arm-cortexa9_neon-linux-uclibcgnueabihf) using BFD version (crosstool-NG 1.24.0.489_25f6dae) 2.37
-  >COMPILER_PATH=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/libexec/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/bin/
-  >LIBRARY_PATH=/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/lib/gcc/arm-cortexa9_neon-linux-uclibcgnueabihf/11.2.0/../../../../arm-cortexa9_neon-linux-uclibcgnueabihf/lib/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/lib/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/usr/lib/
+  >     /home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/../../../../arm-cortexa9_neon-linux-musleabihf/bin/as -v -march=armv7-a+mp+sec -mfloat-abi=hard -mfpu=neon -meabi=5 -o error_functions.o /tmp/ccNn7WLZ.s
+  >GNU assembler version 2.37 (arm-cortexa9_neon-linux-musleabihf) using BFD version (crosstool-NG 1.24.0.489_25f6dae) 2.37
+  >COMPILER_PATH=/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/libexec/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/libexec/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/libexec/gcc/arm-cortexa9_neon-linux-musleabihf/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/../../../../arm-cortexa9_neon-linux-musleabihf/bin/
+  >LIBRARY_PATH=/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/lib/gcc/arm-cortexa9_neon-linux-musleabihf/11.2.0/../../../../arm-cortexa9_neon-linux-musleabihf/lib/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/arm-cortexa9_neon-linux-musleabihf/sysroot/lib/:/home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/arm-cortexa9_neon-linux-musleabihf/sysroot/usr/lib/
   >COLLECT_GCC_OPTIONS='-c' '-g' '-Wall' '-v' '-mcpu=cortex-a9' '-mfloat-abi=hard' '-mfpu=neon' '-mtls-dialect=gnu' '-marm' '-mlibarch=armv7-a+mp+sec+simd' '-march=armv7-a+mp+sec+simd'
   
 - compile application using make 
@@ -176,10 +176,10 @@ You will find the following subdirectories in **sysroot**:
   make 
   ```
 
-  > arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -c -g -Wall error_functions.c 
-  > arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -c -g -Wall get_num.c 
-  > arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -c -g -Wall main.c 
-  > arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -o test error_functions.o get_num.o main.o  
+  > arm-cortexa9_neon-linux-musleabihf-gcc -c -g -Wall error_functions.c 
+  > arm-cortexa9_neon-linux-musleabihf-gcc -c -g -Wall get_num.c 
+  > arm-cortexa9_neon-linux-musleabihf-gcc -c -g -Wall main.c 
+  > arm-cortexa9_neon-linux-musleabihf-gcc -o test error_functions.o get_num.o main.o  
 
   
 
@@ -205,7 +205,7 @@ You will find the following subdirectories in **sysroot**:
 - try again but with 
 
   ```sh
-  arm-cortexa9_neon-linux-uclibcgnueabihf-ldd --root /home/ahmed/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot test
+  arm-cortexa9_neon-linux-musleabihf-ldd --root /home/ahmed/x-tools/arm-cortexa9_neon-linux-musleabihf/arm-cortexa9_neon-linux-musleabihf/sysroot test
   ```
 
   > libc.so.0 => /lib/libc.so.0 (0xdeadbeef)
@@ -214,7 +214,7 @@ You will find the following subdirectories in **sysroot**:
 - try to relink it with `-static` option, compile all libraries statically
 
   ```sh
-  arm-cortexa9_neon-linux-uclibcgnueabihf-gcc -o test_static error_functions.o get_num.o main.o -static
+  arm-cortexa9_neon-linux-musleabihf-gcc -o test_static error_functions.o get_num.o main.o -static
   ```
 
   - try 
@@ -252,7 +252,7 @@ You will find the following subdirectories in **sysroot**:
     - we need to tell qemu where is the libraries to link with 
 
       ```sh 
-      qemu-arm -L ~/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/arm-cortexa9_neon-linux-uclibcgnueabihf/sysroot/ test
+      qemu-arm -L ~/x-tools/arm-cortexa9_neon-linux-musleabihf/arm-cortexa9_neon-linux-musleabihf/sysroot/ test
       ```
 
       > ERROR  [ENOENT No such file or directory] 
