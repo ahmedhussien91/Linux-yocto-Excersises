@@ -54,3 +54,4 @@ Mkfile.old
 dkms.conf
 linux/4-linux_cross_compilation/sd.img
 .vscode/settings.json
+yocto/vsomeip/applications_code/build/*
