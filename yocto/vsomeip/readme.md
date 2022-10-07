@@ -18,7 +18,7 @@ We will describe the following steps in this document:
 
 7. start new image and transfer the vsomeip applications to target using (**SCP**)
 
-8. run applications on target ssh instances for each application 
+8. run applications on target **ssh** instances for each application 
 
 
 
