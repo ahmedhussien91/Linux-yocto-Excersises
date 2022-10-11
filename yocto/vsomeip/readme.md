@@ -245,7 +245,7 @@ ifconfig
 
 Note our setup now is 
 
-Qemu (linux - ip= 192.168.7.2) <--------------> Our Development machine (ip=192.168.7.1)
+**Qemu (linux - ip= 192.168.7.2)** <--------------> **Our Development machine (ip=192.168.7.1)**
 
 to make sure everything is working fine try pinging 192.168.7.1 from Target (Qemu)
 
@@ -256,7 +256,7 @@ ping 192.168.7.2
 > PING 192.168.7.1 (192.168.7.1): 56 data bytes
 > ping: sendto: Network is unreachable
 
-we need to configure the ip of our target using 
+we need to configure the **ip** of our target using 
 
 ```sh
 ifconfig eth0 192.168.7.2
@@ -363,3 +363,6 @@ client-app
 > Service [1234.5678] is NOT available.
 > 2022-09-07 04:52:25.766219 [info] ON_AVAILABLE(0101): [1234.5678:0.0]
 > Service [1234.5678] is available.
+
+Note Service is available
+

@@ -1,11 +1,5 @@
-all: target1 target2 target3
+notall: 
+	echo notall
 
-7amada: depend.c
-	touch 7amada
-
-target2: 
-	touch target2
-	
-target3: dep1
-	touch target3
-	
+all:
+	echo 7amada
