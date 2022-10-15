@@ -26,7 +26,6 @@ export CROSS_COMPILE=arm-cortexa9_neon-linux-uclibcgnueabihf-
 export ARCH=arm
 # load the default configuration of ARM Vexpress Cortex A9
 make vexpress_ca9x4_defconfig
-
 ```
 
 - open configuration menu
@@ -56,13 +55,11 @@ make vexpress_ca9x4_defconfig
 
     - add support to **editenv** `CONFIG_CMD_EDITENV` and **bootd** `CONFIG_CMD_BOOTD`, under `Command line interface`
 
-    
-    
-    
+- 
 
 ### Building U-BOOT
 
-- run `make`  - renamed `image.h`, empty the path variable before building 
+- run `make`  #don't if no errors# - renamed `image.h`, empty the path variable before building 
 
   ```sh
   file u-boot
