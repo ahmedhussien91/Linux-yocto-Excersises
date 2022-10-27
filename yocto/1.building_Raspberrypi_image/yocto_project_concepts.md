@@ -161,7 +161,7 @@ in the following sections we see how this is done and important variables that a
 
 The first stages of building a recipe are to fetch and unpack the source code:
 
-![image-20221026083157747](/home/ahmed/.config/Typora/typora-user-images/image-20221026083157747.png)
+![image-20221026083157747](yocto_project_concepts.assets/image-20221026083157747.png)
 
 The [do_fetch](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-tasks.html#ref-tasks-fetch) and [do_unpack](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-tasks.html#ref-tasks-unpack) tasks fetch the source files and unpack them into the [Build Directory](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-terms.html#term-Build-Directory).
 
@@ -184,7 +184,7 @@ The preceding figure and the following list describe the Build Directory’s hie
 
 Once source code is fetched and unpacked, BitBake locates patch files and applies them to the source files:
 
-![image-20221026083243707](/home/ahmed/.config/Typora/typora-user-images/image-20221026083243707.png)
+![image-20221026083243707](yocto_project_concepts.assets/image-20221026083243707.png)
 
 The [do_patch](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-tasks.html#ref-tasks-patch) task uses a recipe’s [SRC_URI](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-SRC_URI) statements and the [FILESPATH](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-FILESPATH) variable to locate applicable patch files.
 
@@ -196,7 +196,7 @@ see also  “[Use devtool modify to Modify the Source of an Existing Component](
 
 After source code is patched, BitBake executes tasks that configure and compile the source code. Once compilation occurs, the files are copied to a holding area (staged) in preparation for packaging:
 
-![image-20221026083322059](/home/ahmed/.config/Typora/typora-user-images/image-20221026083322059.png)
+![image-20221026083322059](yocto_project_concepts.assets/image-20221026083322059-1666861218529-6.png)
 
 This step in the build process consists of the following tasks:
 
@@ -209,7 +209,7 @@ This step in the build process consists of the following tasks:
 
 After source code is configured, compiled, and staged, the build system analyzes the results and splits the output into packages:
 
-![image-20221026083355139](/home/ahmed/.config/Typora/typora-user-images/image-20221026083355139.png)
+![image-20221026083355139](yocto_project_concepts.assets/image-20221026083355139.png)
 
 The [do_package](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-tasks.html#ref-tasks-package) and [do_packagedata](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-tasks.html#ref-tasks-packagedata) tasks combine to analyze the files found in the [D](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-D) directory and split them into subsets based on available packages and files. 
 
@@ -235,7 +235,7 @@ The [FILES](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#te
 
 Once packages are split and stored in the Package Feeds area, the build system uses BitBake to generate the root filesystem image:
 
-![image-20221026083427372](/home/ahmed/.config/Typora/typora-user-images/image-20221026083427372.png)
+![image-20221026083427372](yocto_project_concepts.assets/image-20221026083427372.png)
 
 The image generation process consists of several stages and depends on several tasks and variables. The [do_rootfs](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-tasks.html#ref-tasks-rootfs) task creates the root filesystem (file and directory structure) for an image. This task uses several key variables to help create the list of packages to actually install:
 
@@ -270,7 +270,7 @@ The final task involved in image creation is the [do_image_complete](https://doc
 
 The OpenEmbedded build system uses BitBake to generate the Software Development Kit (SDK) installer scripts for both the standard SDK and the extensible SDK (eSDK):
 
-![image-20221026083504444](/home/ahmed/.config/Typora/typora-user-images/image-20221026083504444.png)
+![image-20221026083504444](yocto_project_concepts.assets/image-20221026083504444.png)
 
 The `do_populate_sdk` task helps create the standard SDK and handles two parts: a target part and a host part. The target part is the part built for the target hardware and includes libraries and headers. The host part is the part of the SDK that runs on the [SDKMACHINE](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-SDKMACHINE).
 
@@ -280,7 +280,7 @@ The `do_populate_sdk_ext` task helps create the extensible SDK and handles host 
 
 The images produced by the build system are compressed forms of the root filesystem and are ready to boot on a target device. You can see from the [general workflow figure](https://docs.yoctoproject.org/3.2.3/overview-manual/overview-manual-concepts.html#general-workflow-figure) that BitBake output, in part, consists of images. This section takes a closer look at this output:
 
-![image-20221026083550986](/home/ahmed/.config/Typora/typora-user-images/image-20221026083550986.png)
+![image-20221026083550986](yocto_project_concepts.assets/image-20221026083550986.png)
 
 - **kernel-image**: A kernel binary file. The [KERNEL_IMAGETYPE](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-KERNEL_IMAGETYPE) variable determines the naming scheme for the kernel image file. Depending on this variable, the file could begin with a variety of naming strings. The `deploy/images/`machine directory can contain multiple image files for the machine.
 - **root-filesystem-image**: Root filesystems for the target device (e.g. `*.ext3` or `*.bz2` files). The [IMAGE_FSTYPES](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-IMAGE_FSTYPES) variable determines the root filesystem image type. The `deploy/images/`machine directory can contain multiple root filesystems for the machine.
@@ -290,7 +290,7 @@ The images produced by the build system are compressed forms of the root filesys
 
 ## application development SDK
 
-![image-20221026083636533](/home/ahmed/.config/Typora/typora-user-images/image-20221026083636533.png)
+![image-20221026083636533](yocto_project_concepts.assets/image-20221026083636533.png)
 
  The following list shows the variables associated with an extensible SDK:
 
@@ -315,7 +315,7 @@ This next list, shows the variables associated with a standard SDK:
 
 # Cross-Development Toolchain Generation 
 
-![image-20221026083728294](/home/ahmed/.config/Typora/typora-user-images/image-20221026083728294.png)
+![image-20221026083728294](yocto_project_concepts.assets/image-20221026083728294.png)
 
 
 
