@@ -27,7 +27,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
 - in arch/arm/configs -> vexpress_defconfig
 
   ```sh
-  make vexpress_defconfig
+      make vexpress_defconfig
   ```
 
 - to visualize configurations 
@@ -65,7 +65,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
 
   
 
-  NOTE: you can also generate .ko modules build and  install it using `make modules && make modules_install` then transfer it to target and load it using:
+  NOTE: you can also generate **.ko** **modules** build and  install it using `make modules && make modules_install` then transfer it to target and load it using:
 
   - `insmod` load modules without dependencies
   - `modprobe` load modules with all dependencies of top modules
@@ -83,12 +83,33 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
 - Uboot has an important variable that is passed to kernel `bootargs`
   - This variable carry **kernel command line**, which is parameters passed to kernel before starting to allow runtime configuration
     - parameters is saved in  a chosen section in Device Tree
-    - a list of parameters can be found [here](https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html)
+    
+    - a list of parameters can be found [here](https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html), or in **Documentation/kernel-parameters.txt**
+    
+    - a shortlist of most useful ones
+    
+      **debug**: Sets the console log level to the highest level, 8, to ensure that you see all the kernel messages on the console.
+      **init=**: The init program to run from a mounted root filesystem, which defaults to /sbin/init.
+      **lpj=**: Sets loops_per_jiffy to a given constant. There is a description of the significance of this in the paragraph following this list.
+      **panic=**: Behavior when the kernel panics: if it is greater than zero, it gives the number of seconds before rebooting; if it is zero, it waits forever (this is the default); or if it is less than zero, it reboots without any delay.
+      **quiet**: Sets the console log level to silent, suppressing all but emergency messages. Since most devices have a serial console, it takes time to output all those strings. Consequently, reducing the number of messages using this option reduces boot time.
+      **rdinit=**: The init program to run from a ramdisk. It defaults to /init.
+      **ro**: Mounts the root device as read-only. Has no effect on a ramdisk, which is always read/write.
+      **root=**: The device on which to mount the root filesystem.
+      **rootdelay=**: The number of seconds to wait before trying to mount the root device; defaults to zero. Useful if the device takes time to probe the hardware, but also see rootwait.
+      **rootfstype=**: The filesystem type for the root device. In many cases, it is auto-detected during mount, but it is required for jffs2 filesystems.
+      **rootwait**: Waits indefinitely for the root device to be detected. Usually **necessary** with **MMC** devices.
+      **rw**: Mounts the root device as read-write (default).
+    
+      **ip=**: set target ip address, See **Documentation/admin-guide/nfs/nfsroot.rst**.
+    
+      **nfsroot=**: NFS server details
+  
 - U-boot can directly boot the zImage binary, typical process is to
   - load kernel (zImage) at address X in memory
   - load \<board>.dtb at address Y in memory
   - Start kernel with `bootz X - Y`
-    - `-` indicates no initramfs
+    - `-` indicates no **initramfs**
 
 
 
@@ -112,23 +133,24 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
   - set `bootargs` env
 
     ```sh 
-    setenv bootargs console=ttyAMA0
+    setenv bootargs console=ttyAMA0 root=/dev/mmcblk0p2setenv bootargs console=ttyAMA0
+    saveenv
     saveenv
     ```
-
+  
   - load kernel image `zImage` and DTB `vexpress-v2p-ca9.dtb` from TFTP into RAM
-
+  
     ```sh
     tftp 0x61000000 zImage
     tftp 0x62000000 vexpress-v2p-ca9.dtb
     ```
-
+  
   - boot the kernel with its device tree
-
+  
     ```sh
     bootz 0x61000000 - 0x62000000
     ```
-
+  
     > Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)
     > CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.6 #1
     > Hardware name: ARM-Versatile Express
@@ -207,7 +229,7 @@ On target system
   this can be done by changing the `bootargs` as follows (note use **same qemu command as before**)
 
   ```sh 
-  setenv bootargs ${bootargs} root=/dev/nfs ip=192.168.0.100:::::eth0 nfsroot=192.168.0.1:/home/ahmed/Documents/linux_amit/Embedded_linux/Linux-yocto-Excersises/linux/4-linux_cross_compilation/rootfs,nfsvers=3,tcp rw
+  setenv bootargs ${bootargs} root=/dev/nfs ip=192.168.0.100:::::eth0 nfsroot=192.168.0.1:/home/ahmed/Documents/busybox/_install,nfsvers=3,tcp rw init=/sbin/init
   saveenv
   reset
   ```
