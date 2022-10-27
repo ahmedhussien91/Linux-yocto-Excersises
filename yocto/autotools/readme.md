@@ -239,3 +239,5 @@ we have a package
 https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html
 
 https://www.lrde.epita.fr/~adl/dl/autotools.pdf
+
+https://opensource.com/article/19/7/introduction-gnu-autotools 

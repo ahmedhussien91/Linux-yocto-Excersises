@@ -149,7 +149,7 @@ we need also to configure our local.conf varaibles:
 
 **BB_NUMBER_THREADS:** How many tasks BitBake should perform in parallel. Defaults to the number of CPUs on the system. `8`
 
-**PARALLEL_MAKE:** How many processes should be used when compiling. Defaults to the number of CPUs on the system `8`
+**PARALLEL_MAKE:** How many processes should be used when compiling. Defaults to the number of CPUs on the system `-j 8`
 
 **MACHINE:** The machine the target is built for `raspberrypi2`
 
@@ -158,10 +158,8 @@ we need also to configure our local.conf varaibles:
 # This sets the default machine to be qemux86-64 if no other machine is selected:
 #MACHINE ??= "qemux86-64"
 MACHINE = "raspberrypi2"
-BB_NUMBER_Tconfiguration variables relative to the current user for the build. Configuration variables can be overridden there.
-
-wHREADS = "8"
-PARALLEL_MAKE = "8"
+BB_NUMBER_THREADS = "8"
+PARALLEL_MAKE = "-j 8"
 ...
 
 ```
