@@ -116,7 +116,7 @@ search for **OVERRIDE**:
 
 note:
 
-- OVERRIDE variable is composed of values from: CLASSOVERRIDE, DISTROOVERRIDES, LIBCOVERRIDE and MACHINEOVERRIDES
+- **OVERRIDE** variable is composed of values from: **CLASSOVERRIDE**, **DISTROOVERRIDES**, **LIBCOVERRIDE** and **MACHINEOVERRIDES**
 
 - variables that use the **OVERRIDES** that contain `raspberrypi2`, will apply the value with `_raspberrypi2` postfix for example
 
@@ -185,17 +185,17 @@ IMAGE_INSTALL_append = "openssh"
 then rebuild the image using 
 
 ```sh
-bitbake core-image-minimal
-dd if=poky/build/tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2.rpi-sdimg of=/dev/sdc
+bitbake core-image-minimal # make the image
+dd if=poky/build/tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2.rpi-sdimg of=/dev/sdc # flash the image to SD card
 ```
-
-
 
 to configure ip your address you can use 
 
 ```sh
 ifconfig <interfac-name> <ip-address>/<subnet> # ex. ifconfig enp0s3 192.168.178.32/24
 ```
+
+you are now ready to test **ssh** on your raspberrypi after placing the sd card on to the raspberrypi
 
 
 
