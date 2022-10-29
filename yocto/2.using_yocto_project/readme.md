@@ -118,7 +118,7 @@ note:
 
 - OVERRIDE variable is composed of values from: CLASSOVERRIDE, DISTROOVERRIDES, LIBCOVERRIDE and MACHINEOVERRIDES
 
-- variables that use the OVERRIDES, will apply the value with `_raspberrypi2` postfix for example
+- variables that use the **OVERRIDES** that contain `raspberrypi2`, will apply the value with `_raspberrypi2` postfix for example
 
 let's check some of those variables with `_raspberrypi2` postfix
 
@@ -131,9 +131,22 @@ grep -r .*_raspberrypi2.*= .
 > ./meta-raspberrypi/classes/sdcard_image-rpi.bbclass:SDIMG_KERNELIMAGE_raspberrypi2 ?= "kernel7.img"
 > ./meta-raspberrypi/recipes-kernel/linux/linux-raspberrypi.inc:KBUILD_DEFCONFIG_raspberrypi2 ?= "bcm2709_defconfig"
 
+in `./meta-raspberrypi/recipes-kernel/linux/linux-raspberrypi.inc` we see the same variable `KBUILD_DEFCONFIG` is set to different values depending on the value that is placed in the **OVERRIDES** variable
+
+```sh
+KBUILD_DEFCONFIG_raspberrypi0-wifi ?= "bcmrpi_defconfig"
+KBUILD_DEFCONFIG_raspberrypi ?= "bcmrpi_defconfig"
+KBUILD_DEFCONFIG_raspberrypi-cm3 ?= "bcm2709_defconfig"
+KBUILD_DEFCONFIG_raspberrypi2 ?= "bcm2709_defconfig"
+KBUILD_DEFCONFIG_raspberrypi3 ?= "bcm2709_defconfig"
+KBUILD_DEFCONFIG_raspberrypi3-64 ?= "bcmrpi3_defconfig"
+KBUILD_DEFCONFIG_raspberrypi4 ?= "bcm2711_defconfig"
+KBUILD_DEFCONFIG_raspberrypi4-64 ?= "bcm2711_defconfig"
+```
 
 
-who set the OVERRIDE variable ? 
+
+who set the **OVERRIDE** variable ? 
 ```sh
 grep -r OVERRIDE.*= . 2>/dev/null 
 ```
@@ -149,7 +162,7 @@ note that the machine is selected in the `local.conf` file, looks like the sequa
 
 - your set the machine in local.conf
 - each machine has a configuration 
--  MACHINEOVERRIDES is set in this machine configuration, like `raspberrypi3-64.conf`
+-  **MACHINEOVERRIDES** is set in this machine configuration, like `raspberrypi3-64.conf`
 
 
 
