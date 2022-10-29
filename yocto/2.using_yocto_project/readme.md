@@ -188,7 +188,7 @@ ifconfig <interfac-name> <ip-address>/<subnet> # ex. ifconfig enp0s3 192.168.178
 
 ## bitbake 
 
-### Remember:
+### Remember (bitbake usage):
 
 bitbake [target]
 
@@ -199,7 +199,7 @@ bitbake [target]
 - World: keyword for all recipes
 - -b \<recipe>: execute tasks from the given recipe (without resolving dependencies)
 
-### play with bitbake:
+#### bitbake usage:
 
 list tasks of kernel `virtual/kernel`
 
@@ -241,6 +241,21 @@ bitbake -vn virtual/kernel
 >
 > NOTE: selecting linux-raspberrypi to satisfy virtual/kernel due to PREFERRED_PROVIDERS
 
+variables can change from recipes or configuration files to check those changes for a \<variable> we can use:
+
+```sh
+# bitbake -e | grep <variable>
+bitbake -e | grep OVERRIDES.*=
+# note This command displays variable values after the configuration files (i.e. `local.conf`, `bblayers.conf`, `bitbake.conf` and so forth) have been parsed.
+```
+
+>DISTROOVERRIDES="poky"
+>FILESOVERRIDES="arm:rpi:armv7ve:raspberrypi4:poky"
+>MACHINEOVERRIDES="rpi:armv7ve:raspberrypi4"
+>OVERRIDES="linux-gnueabi:arm:pn-defaultpkgname:rpi:armv7ve:raspberrypi4:poky:class-target:libc-glibc:forcevariable"
+>
+>unless the package sets SRC_URI_OVERRIDES_PACKAGE_ARCH=0
+
 
 
 ## Clean Sstate cache:
@@ -251,64 +266,24 @@ bitbake -vn virtual/kernel
 
 
 
-# mount rootfs over network 
-it is not practical at all to reflash the root filesystem on the target everytime a change is made. so we can set the RFS to be on the network.
-
-### Configure Target
-
-we need also to check linux kernel configuration for enabling the Network file system is enabled by using   
-
-```sh 
-bitbake -c menuconfig virtual/kernel
-```
-
-check that 
-
-- `CONFIG_NFS_FS=y`, NFS client support
-
-- `CONFIG_IP_PNP=y`, configure IP at boot time
-
-- `CONFIG_ROOT_NFS=y`, support for NFS as rootfs
-
-save and force rebuild of kernel then build image core-minimal-image again  
-
-```sh
-bitbake -c savedefconfig virtual/kernel //savedefconfig
-bitbake -f virtual/kernel // run the linux build again
-bitbake core-image-minimal 
-```
-
-
-
-To configure this we need to set the bootloader to pass the kernel parameters to set RFS on network as follows, in our case we will change "cmdline.txt" on the sdcard to this value
-
-```sh
-root=/dev/nfs rw console=tty1,115200 nfsroot=192.168.0.6:/nfs ip=192.168.0.100:::::eth0
-```
-
-
-
-### Configure Host
-
-```sh
-# Install an NFS server
-sudo apt install nfs-kernel-server
-# add exported directory to `/etc/exports` file, with target ip as follows
-/nfs 192.168.0.100(rw,no_root_squash,no_subtree_check)
-# ask you NFS server to apply this new configuration (reload this file)
-sudo exportfs -r
-```
-
 
 # Recipes syntax
 
-To start with playing and idetifying some recipes syntax we need to make a **new layer** to include multiple **recipes** that will help us testing recipes syntax. 
+see [this](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html)
 
-## Inserting your custom application in new image
+### Remember:
+
+- all variables in bitbake is string 
+- recipes consist of header, source and tasks
+- syntax written in recipes are python or shell 
+- variables are set -> `A = "value"` used with syntax`${A}`
+- The “=” operator does not immediately expand variable references in the right-hand side. Instead, expansion is deferred until the variable assigned to is actually used. see [trial2](###= trial2)
+
+To start with playing and idetifying some recipes syntax we need to make a **new layer** to include multiple **recipes** that will help us testing recipes syntax. 
 
 ### make new custom layer manually
 
- To make a new layer we just create a new folder `meta-custom/` beside `poky/`, then we will introduced some files as follows:
+ To make a new layer we just create a new folder `meta-custom/` under `poky/`, then we will introduced some files as follows:
 
 - it's usually advised to start your layer naming with `meta-` but not mandatory, we create the layer folder structure as follows
 
@@ -317,63 +292,188 @@ mkdir meta-custom
 cd meta-custom
 mkdir conf
 cd conf
-echo "# Append conf and classes directory to BBPATH\n\
-BBPATH .= ":${LAYERDIR}"\n\
-\n\
-# add folder structure to recipes (.bb) to BBFILES variable\n\
-BBFILES += "${LAYERDIR}/recipes*/*/*.bb"\n\
+echo "# Append conf and classes directory to BBPATH
+BBPATH .= \":\${LAYERDIR}\"
+
+# add folder structure to recipes (.bb) to BBFILES variable
+BBFILES += \"\${LAYERDIR}/recipes*/*/*.bb\"
 " > layer.conf
 cd .. #back to meta-custom/ folder
-mkdir recipes-lap1
-cd recipes-lap1
-mkdir custom-app
-cd custom-app
+mkdir recipes-lap2
+cd recipes-lap2
+mkdir syntax1
+cd syntax1
 ```
 
-### Inserting our recipes
+### Inserting our recipes (trial1) 
 
-let's write our first recipe in the `syntax-trails/` we will make a file `syntax-trail_1.0.bb` and include this code in it 
+let's write our first recipe in the `syntax1/` we will make a file `syntax-trail_1.0.bb` and include this code in it 
 
 ```sh
+touch syntax-trial_1.0.bb
 ```
 
-
-
- 
-
-### playing with recipes to identify some syntax
+ open the recipe and add these lines to add a task **display** for this recipe that we will use to print the output 
 
 ```sh
+SUMMARY = "syntax recipe"
+DESCRIPTION = "Recipe for testing yocto recipes syntax"
+LICENSE = "MIT"
+
+python do_display() {
+    print("welcome to syntax testing - printing");
+    bb.plain("welcome to syntax testing - plain");
+}
+
+addtask display before do_build
+```
+
+save and let's try to bitbake this recipe but first for this to work we need to add out layer to the **bblayer.conf** for the bitbake to see it.
+
+after doing so we execute our recipe using
+
+```sh
+bitbake syntax-trial
+```
+
+>...
+>
+>NOTE: Executing Tasks
+>welcome to syntax testing - plain
+>NOTE: Tasks Summary: Attempted 543 tasks of which 541 didn't need to be rerun and all succeeded.
+>
+>Summary: There was 1 WARNING message shown.
+
+Note that only `bb.plain("welcome to syntax testing - plain")` was displayed 
+
+let's navigate throught recipe's work directory
+
+![image-20221029085742399](./assets/image-20221029085742399.png)
+
+one of the most important folders is the `temp` folder, notice  while going through
+
+- there is two types of files one that start **log** and one that start with **run**
+- the names of the files is the same as **tasks**
+- note that we have `run.do_display` and `log.do_display`
+
+folder that start **log** for example **log.do_display** will contain the output of the function in execution
+
+```sh
+DEBUG: Executing python function do_display
+welcome to syntax testing - plain
+DEBUG: Python function do_display finished
+welcome to syntax testing - printing
+```
+
+Note `welcome to syntax testing - plain` and `welcome to syntax testing - printing`
+
+for **run** for example **run.do_display** will contain the function that was executed in our case a python script that will do the following:
+
+```sh
+def do_display(d):
+    print("welcome to syntax testing - printing");
+    bb.plain("welcome to syntax testing - plain");
+
+do_display(d)
 ```
 
 
 
-# optimizing your image
+### = trial2
 
-this is an answer to a stackoverflow question ([link](https://stackoverflow.com/questions/28765494/yocto-minimal-image-with-package-management)) 
+[up](###Remember)
 
-I can suggest you few things, which may help you to optimize size of rootfs:
+this trial should show the difference between the `=` and `:=` , create another file `syntax-trial2_1.0.bb` under `syntax2/`folder.
 
-- Optimize as much as possible linux kernel binary and removed unnecessary packages (filesystem,device driver,networking etc).
+**syntax-trial2_1.0.bb**
 
-  ```
-  $ bitbake -c menuconfig virtual/kernel //configure as per your requirement
-  $ bitbake -c savedefconfig virtual/kernel //savedefconfig
-  $ bitbake -f virtual/kernel
-  ```
+```
+SUMMARY = "syntax recipe"
+DESCRIPTION = "Recipe for testing yocto recipes syntax"
+LICENSE = "MIT"
 
-- Configure Busybox and removed unused things:
+A = "${B} baz"
+B = "${C} bar"
+C = "foo"
 
-  ```
-  $ bitbake -c menuconfig busybox
-  ```
+# uncomment line by line
+# *At this point, ${A} equals "foo bar baz"*
+#C = "qux"
+# *At this point, ${A} equals "qux bar baz"*
+#B = "norf"
+# *At this point, ${A} equals "norf baz"*
 
-- Remove those Distro features if not in use (and check more also): graphics [x11], sound [alsa], touchscreen [touchscreen], Multimedia. Change apply in `conf/local.conf` file. Example: `DISTRO_FEATURES_remove = "x11 alsa touchscreen bluetooth opengl wayland "`
+# uncomment this and comment lines above and see the behavior
+#A := "${B} baz"
+#B := "${C} bar"
+#C := "foo"
 
-- Choose proper system init manager: systemd or sysvinit
+python do_display() {
+    bb.plain("variable A: " + d.getVar("A"));
+    bb.plain("variable B: " + d.getVar("B"));
+    bb.plain("variable C: " + d.getVar("C"));
+}
 
-- Removed Unused Packages from the image. Example `PACKAGE_EXCLUDE = "perl5 sqlite3 udev-hwdb bluez3 bluez4"`
+addtask display before do_build
+```
 
-- For small embedded device preferred `PACKAGE_CLASSES = "package_ipk"` and it is well optimized for small systems.
+run `bitbake -c display  syntax-trial2` and comment and uncomment lines to know the difference 
 
- 
+modify the same script to do this exercises to know the differnance between [??=](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#setting-a-weak-default-value),  [+= and =+](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#setting-a-weak-default-value), [.= and =.](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#appending-and-prepending-without-spaces), [append and preappend](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#appending-and-prepending-override-style-syntax), 
+
+### Overrides style (append) advantage over +=
+
+consider a class `foo.bbclass` that needs to add the value “val” to the variable `FOO`, and a recipe that uses `foo.bbclass` as follows:
+
+```python
+inherit foo
+FOO = "initial"
+```
+
+If `foo.bbclass` uses the “+=” operator, as follows, then the final value of `FOO` will be “initial”, which is not what is desired:
+
+```python
+FOO += "val"
+```
+
+If, on the other hand, `foo.bbclass` uses the “:append” operator, then the final value of `FOO` will be “initial val”, as intended:
+
+```python
+FOO:append = " val"
+```
+
+
+
+### Variable Flag Syntax
+
+**Variable flags** are BitBake’s implementation of variable **properties** or **attributes**.
+
+Here are some examples showing how to set variable flags:
+
+```python
+FOO[a] = "abc"
+FOO[b] = "123"
+FOO[a] += "456"
+```
+
+The variable `FOO` has two flags: `[a]` and `[b]`. The flags are immediately set to “abc” and “123”, respectively. The `[a]` flag becomes “abc 456”.
+
+### Inline python 
+
+You can use python inline like the following syntax 
+
+```python
+DATE = "${@time.strftime('%Y%m%d',time.gmtime())}"
+```
+
+### unsetting variables
+
+You can **unset** variables like the following example
+
+```sh
+unset DATE
+unset do_fetch[noexec]
+```
+
+
+

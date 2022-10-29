@@ -1,3 +1,56 @@
+# mount rootfs over network 
+
+it is not practical at all to reflash the root filesystem on the target everytime a change is made. so we can set the root file system to be on the network.
+
+to do so we follow the upcomming steps
+
+### Configure Target
+
+we need also to check linux kernel configuration for enabling the Network file system is enabled by using   
+
+```sh 
+bitbake -c menuconfig virtual/kernel
+```
+
+check that 
+
+- `CONFIG_NFS_FS=y`, NFS client support
+
+- `CONFIG_IP_PNP=y`, configure IP at boot time
+
+- `CONFIG_ROOT_NFS=y`, support for NFS as rootfs
+
+save and force rebuild of kernel then build image core-minimal-image again: 
+
+```sh
+bitbake -c savedefconfig virtual/kernel # savedefconfig
+bitbake -f virtual/kernel # run the linux build again
+bitbake core-image-minimal 
+```
+
+
+
+To configure this we need to set the bootloader to pass the kernel parameters to set RFS on network as follows, in our case we will change "**cmdline.txt**" on the sdcard to this value
+
+```sh
+root=/dev/nfs rw console=tty1,115200 nfsroot=192.168.0.6:/nfs ip=192.168.0.100:::::eth0
+```
+
+### Configure Host
+
+```sh
+# Install an NFS server
+sudo apt install nfs-kernel-server
+# add exported directory to `/etc/exports` file, with target ip as follows
+/nfs 192.168.0.100(rw,no_root_squash,no_subtree_check)
+# ask you NFS server to apply this new configuration (reload this file)
+sudo exportfs -r
+```
+
+
+
+
+
 # adding custom application
 
 
@@ -137,3 +190,33 @@ grep -r --exclude-dir=build*  '.*contains.*DISTRO_FEATURES.*' .  | grep wifi
   - **d** data store
 
   you will note that `packagegroup-base.bb` mentions the wifi multiple times let's explore this 
+
+# optimizing your image
+
+this is an answer to a stackoverflow question ([link](https://stackoverflow.com/questions/28765494/yocto-minimal-image-with-package-management)) 
+
+I can suggest you few things, which may help you to optimize size of rootfs:
+
+- Optimize as much as possible linux kernel binary and removed unnecessary packages (filesystem,device driver,networking etc).
+
+  ```
+  $ bitbake -c menuconfig virtual/kernel //configure as per your requirement
+  $ bitbake -c savedefconfig virtual/kernel //savedefconfig
+  $ bitbake -f virtual/kernel
+  ```
+
+- Configure Busybox and removed unused things:
+
+  ```
+  $ bitbake -c menuconfig busybox
+  ```
+
+- Remove those Distro features if not in use (and check more also): graphics [x11], sound [alsa], touchscreen [touchscreen], Multimedia. Change apply in `conf/local.conf` file. Example: `DISTRO_FEATURES_remove = "x11 alsa touchscreen bluetooth opengl wayland "`
+
+- Choose proper system init manager: systemd or sysvinit
+
+- Removed Unused Packages from the image. Example `PACKAGE_EXCLUDE = "perl5 sqlite3 udev-hwdb bluez3 bluez4"`
+
+- For small embedded device preferred `PACKAGE_CLASSES = "package_ipk"` and it is well optimized for small systems.
+
+ 

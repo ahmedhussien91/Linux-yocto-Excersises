@@ -133,8 +133,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
   - set `bootargs` env
 
     ```sh 
-    setenv bootargs console=ttyAMA0 root=/dev/mmcblk0p2setenv bootargs console=ttyAMA0
-    saveenv
+    setenv bootargs console=ttyAMA0
     saveenv
     ```
   
