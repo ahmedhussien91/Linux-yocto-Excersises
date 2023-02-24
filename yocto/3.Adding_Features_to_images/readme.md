@@ -30,7 +30,7 @@ bitbake core-image-minimal
 
 
 
-To configure this we need to set the bootloader to pass the kernel parameters to set RFS on network as follows, in our case we will change "**cmdline.txt**" on the sdcard to this value
+To configure this we need to set the bootloader to pass the kernel parameters to set RFS on network as follows, in our case of raspberrypi we will change "**cmdline.txt**" on the sdcard to this value
 
 ```sh
 root=/dev/nfs rw console=tty1,115200 nfsroot=192.168.0.6:/nfs ip=192.168.0.100:::::eth0
@@ -47,7 +47,9 @@ sudo apt install nfs-kernel-server
 sudo exportfs -r
 ```
 
+Root file system will be on the host machine on `/nfs`
 
+# adding custom layer
 
 
 

@@ -104,7 +104,7 @@ make vexpress_ca9x4_defconfig
 
 #### playing with U-boot
 
-##### creating SD-card
+##### Creating SD-card
 
 We will now add SD-card image to the QEMU virtual machine to store the U-Boot's Environment.
 
@@ -153,7 +153,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   > mkfs.fat 4.1 (2017-01-24)
   > mkfs.fat: warning - lowercase labels might not work properly with DOS or Windows
 
-- release the loop device after finishing
+- release the loop device **only** after **finishing Exercise**
 
   ```sh 
   sudo losetup -d /dev/loop<x>
@@ -161,9 +161,9 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
 
   
 
-##### testing U-boot's Env
+##### Testing SD card 
 
-- start Qemu with the Emulated SD card
+- start Qemu with the **Emulated SD** card
 
   ```sh
   qemu-system-arm -M vexpress-a9 -m 128M -nographic \
@@ -173,8 +173,10 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
 
   `ctrl-A x` to exit qmeu
 
-- set and store environment variable ---> reset ---> print variable
+- set and store environment variable ---> reset ---> print variable 
 
+  - variable **foo** will have the same value after **reset** as uboot.env has been saved
+  
   ```sh 
   # setenv env value
   setenv foo bar
@@ -182,8 +184,15 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
   reset
   printenv foo 
   ```
-
+  
   > foo=bar
+  
+  - to see uboot.env file we can mount the virtual sd card on pc using the following steps
+    - close qemu
+    - `mkdir sd`
+    - `mount /dev/loop<x> ./sd`
+    - `cd ./sd`
+    - you should find the **uboot.env** file and you can place any file and load it to the Qemu **memory** using `fatload` in uboot terminal
 
 #### setup networking between Qemu(uboot) and host
 
@@ -335,6 +344,27 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
 
   
 
-# loading image through fat partition             (ToDo)
+# loading Kernel image through fat partition
 
+we can use uboot to start kernel following the upcoming steps:
+
+- load kernel image in the memory using uboot
+- load device tree blob in the memory using uboot
+- tell uboot to start kernel
+
+those steps can be done one after another like this
+
+```sh
+> fatload mmc 0:1 0x60000000 zImage
+> fatload mmc 0:1 0x61000000 vexpress-v2p-ca9.dtb
+> bootz 0x60000000 - 0x61000000
+```
+
+ or you can let the uboot execute them automatically after booting by setting the `bootcmd` variable like this
+
+```sh
 setenv bootcmd 'fatload mmc 0:1 0x60000000 zImage; fatload mmc 0:1 0x61000000 vexpress-v2p-ca9.dtb; bootz 0x60000000 - 0x61000000'
+reset
+# don't interrup the uboot it will continue do the commands automatically
+```
+

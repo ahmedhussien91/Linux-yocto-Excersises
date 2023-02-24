@@ -11,6 +11,8 @@ contain the AMIT linux yocto excersises
 
 ### 4. [linux_cross_compilation](linux/4-linux_cross_compilation/Readme.md)
 
+### **5.** **[linux_init_applications](linux/5-init_applications/readme.md)**
+
 
 
 
