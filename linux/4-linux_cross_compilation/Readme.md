@@ -65,7 +65,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
 
   
 
-  NOTE: you can also generate **.ko** **modules** build and  install it using `make modules && make modules_install` then transfer it to target and load it using:
+  NOTE: you can also generate **.ko** **modules** build and  install it using `make modules && make INSTALL_MOD_PATH=<dir> modules_install`   then transfer it to target and load it using:
 
   - `insmod` load modules without dependencies
   - `modprobe` load modules with all dependencies of top modules
@@ -111,7 +111,8 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
   - Start kernel with `bootz X - Y`
     - `-` indicates no **initramfs**
 
-
+- This parameters can be viewed by executing `cat /proc/cmdline` 
+  - to change parameters for grub see [this](https://askubuntu.com/questions/19486/how-do-i-add-a-kernel-boot-parameter)
 
 ### practical
 
