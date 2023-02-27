@@ -21,8 +21,9 @@ git checkout v2022.07
 ### Configure U-boot
 
 ```sh 
-# set the corss toolchain that should be used 
-export CROSS_COMPILE=arm-cortexa9_neon-linux-uclibcgnueabihf-
+# set the corss toolchain that should be used
+PATH=$PATH:~/x-tools/arm-cortexa9_neon-linux-musleabihf/bin/
+export CROSS_COMPILE=arm-cortexa9_neon-linux-musleabihf-
 export ARCH=arm
 # load the default configuration of ARM Vexpress Cortex A9
 make vexpress_ca9x4_defconfig

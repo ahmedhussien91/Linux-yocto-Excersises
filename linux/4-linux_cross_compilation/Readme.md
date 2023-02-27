@@ -13,8 +13,8 @@ git checkout v5.19.6
 ## setup cross-compiling environment
 
 ```sh
-export PATH=$HOME/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/bin/:$PATH
-export CROSS_COMPILE=arm-cortexa9_neon-linux-uclibcgnueabihf-
+export PATH=$HOME/x-tools/arm-cortexa9_neon-linux-musleabihf/bin/:$PATH
+export CROSS_COMPILE=arm-cortexa9_neon-linux-musleabihf-
 export ARCH=arm
 ```
 
@@ -204,8 +204,8 @@ we need to download, configure and cross compile then install **busybox** in the
 git clone git://git.busybox.net/busybox
 cd busybox/
 make menuconfig # build statically
-export PATH=$HOME/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/bin/:$PATH
-export CROSS_COMPILE=arm-cortexa9_neon-linux-uclibcgnueabihf-
+export PATH=$HOME/x-tools/arm-cortexa9_neon-linux-musleabihf/bin/:$PATH
+export CROSS_COMPILE=arm-cortexa9_neon-linux-musleabihf-
 export ARCH=arm
 make 
 make install # output is by default placed in _install/
