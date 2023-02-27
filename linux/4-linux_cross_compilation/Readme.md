@@ -63,9 +63,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
 
   
 
-  
-
-  NOTE: you can also generate **.ko** **modules** build and  install it using `make modules && make INSTALL_MOD_PATH=<dir> modules_install`   then transfer it to target and load it using:
+  NOTE: you can also generate **.ko** **modules** build and  install it using `make modules && make INSTALL_MOD_PATH=<dir> modules_install`   then transfer it to target and start loading it using:
 
   - `insmod` load modules without dependencies
   - `modprobe` load modules with all dependencies of top modules
@@ -105,7 +103,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
     
       **nfsroot=**: NFS server details
   
-- U-boot can directly boot the zImage binary, typical process is to
+- U-boot can directly boot the **zImage** binary, typical process is to
   - load kernel (zImage) at address X in memory
   - load \<board>.dtb at address Y in memory
   - Start kernel with `bootz X - Y`
@@ -116,7 +114,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
 
 ### practical
 
-- copy image + dtb to `tftp` default directory 
+- copy **image** + **dtb** to `tftp` default directory 
 
   ```sh
   cp linux/arch/arm/boot/zImage /srv/tftp/
@@ -134,7 +132,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
   - set `bootargs` env
 
     ```sh 
-    setenv bootargs console=ttyAMA0
+    setenv bootargs console=ttyAMA0 
     saveenv
     ```
   
@@ -167,7 +165,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
     > 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
     > ---[ end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0) ]---
     
-    kernel crashed as it couldn't mount any root fs
+    kernel crashed as it couldn't mount any **root fs**
     
     
 
@@ -192,7 +190,29 @@ it's possible to link the rootfile system on target to root file system on the h
 
 ![Screenshot from 2022-09-05 04-52-32](Readme.assets/Screenshot from 2022-09-05 04-52-32.png)
 
+### Root FileSystem with busybox
 
+**busybox**: light weight basic set of programs to
+
+- init linux system (init program)
+- shell
+- utilities for file manipulation and system configuration  
+
+we need to download, configure and cross compile then install **busybox** in the **nfsroot** directory.
+
+```sh
+git clone git://git.busybox.net/busybox
+cd busybox/
+make menuconfig # build statically
+export PATH=$HOME/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/bin/:$PATH
+export CROSS_COMPILE=arm-cortexa9_neon-linux-uclibcgnueabihf-
+export ARCH=arm
+make 
+make install # output is by default placed in _install/
+cp -r  _install/* ../rootfs/
+```
+
+let's use `../rootfs/` as our network root file system, to setup rootfs over network follow the next section
 
 ### mounting rootfs over the network
 
@@ -229,7 +249,7 @@ On target system
   this can be done by changing the `bootargs` as follows (note use **same qemu command as before**)
 
   ```sh 
-  setenv bootargs ${bootargs} root=/dev/nfs ip=192.168.0.100:::::eth0 nfsroot=192.168.0.1:/home/ahmed/Documents/busybox/_install,nfsvers=3,tcp rw init=/sbin/init
+  setenv bootargs console=ttyAMA0 root=/dev/nfs ip=192.168.0.100:::::eth0 nfsroot=192.168.0.1:/home/ahmed/Documents/busybox/_install,nfsvers=3,tcp rw
   saveenv
   reset
   ```
@@ -262,7 +282,15 @@ On target system
   > 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
   > ---[ end Kernel panic - not syncing: No working init found.  Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst for guidance. ]---
 
-`devtmpfs: error mounting -2` is happening because the kernel is tring to mount the *devmpfs* file system in the */dev/* in the root filesystem --> to solve this issue create a /dev/ directory under `nfsroot` and `reboot`
+`devtmpfs: error mounting -2` is happening because the kernel is trying to mount the ***devmpfs*** file system in the ***/dev/*** in the root filesystem --> 
+
+to solve this issue inside `../rootfs/` create a /dev/ directory using
+
+```sh
+mkdir ./dev # under `rootfs` folder
+```
+
+then reboot the output will be 
 
 > IP-Config: Guessing netmask 255.255.255.0
 > IP-Config: Complete:
@@ -292,37 +320,30 @@ On target system
 > 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
 > ---[ end Kernel panic - not syncing: No working init found.  Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst for guidance. ]---
 
-Note: Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst for guidance. ]
+Note: Try passing `init=` option to kernel. See Linux Documentation/admin-guide/init.rst for guidance. 
 
-our system is mostly empty there isn't such an application yet.
-
-### root filesystem with busybox
-
-**busybox**: light weight basic set of programs to
-
-- init linux system (init program)
-- shell
-- utilities for file manipulation and system configuration  
-
- 
-
-we need to download, configure and cross compile then install **busybox** in the **nfsroot** directory.
+we need to pass the **init** program and setup the `inittab` file inside the  `rootfs/etc/` to be as follows
 
 ```sh
-git clone git://git.busybox.net/busybox
-cd busybox/
-make menuconfig # build statically
-export PATH=$HOME/x-tools/arm-cortexa9_neon-linux-uclibcgnueabihf/bin/:$PATH
-export CROSS_COMPILE=arm-cortexa9_neon-linux-uclibcgnueabihf-
-export ARCH=arm
-make 
-make install # output is by default placed in _install/
-cp -r  _install/* ../rootfs/
+# inittab file 
+# see `examples/inittab` file in `busybox` sources, copy `examples/inittab` to `/etc/` then modify or use those lines
+::sysinit:/etc/init.d/rcS
+# Start an "askfirst" shell on the console (whatever that may be)
+ttyAMA0::askfirst:-/bin/sh
+# you can also start our application and respawn if crashed or ended
+#::respawn:/bin/readapp
+
+# Stuff to do when restarting the init process
+::restart:/sbin/init
 ```
 
+and set u-boot commands as follows  
 
-
-Notice: `rootfs/sbin/init` is not here, let's start kernel again
+```sh
+setenv bootargs console=ttyAMA0 root=/dev/nfs ip=192.168.0.100:::::eth0 nfsroot=192.168.0.1:/home/ahmed/Documents/busybox/_install,nfsvers=3,tcp rw init=/sbin/init
+saveenv
+reset
+```
 
 > IP-Config: Guessing netmask 255.255.255.0
 > IP-Config: Complete:
@@ -349,13 +370,13 @@ the folder that carry the configurations is `etc` folder, didnot exist also the 
 
 ### virtual file systems
 
-try `ps`  command on host
+try `ps`  command on **host**
 
 >    PID TTY          TIME CMD
 >   86648 pts/2    00:00:00 bash
 >  175312 pts/2    00:00:00 ps
 
-`ps`  on target
+`ps`  on **target**
 
 > random: ps: uninitialized urandom read (4 bytes read)
 > PID   USER     TIME  COMMAND
@@ -370,19 +391,7 @@ virtual file systems don't exist on target create under `rootfs` folder thse fol
 ### System configuration and startup 
 
 The first user space program that gets executed by the kernel is `/sbin/init` and its configuration
-file is `/etc/inittab`.
-
-see `examples/inittab` file in `busybox` sources, copy `examples/inittab` to `/etc/`
-
-> Freeing unused kernel image (initmem) memory: 1024K
-> Run /sbin/init as init process
-> random: init: uninitialized urandom read (4 bytes read)
-> can't run '/etc/init.d/rcS': No such file or directory
->
-> Please press Enter to activate this console. random: getty: uninitialized urandom read (4 bytes read)
-> random: getty: uninitialized urandom read (4 bytes read)
->
-> random: sh: uninitialized urandom read (4 bytes read)
+file is `/etc/inittab`. in `inittab` we are executing `::sysinit:/etc/init.d/rcS`but this file doesn't exist.
 
 create `/etc/init.d/rcS` startup script and in this script mount `/proc` `/sys` filesystems:
 
@@ -392,6 +401,7 @@ create `/etc/init.d/rcS` startup script and in this script mount `/proc` `/sys` 
 mount -t proc nodev /proc
 # mount a filesystem of type `sysfs` to /sys
 mount -t sysfs nodev /sys
+# you can create `/dev` and execute `mdev -s` if you missed the `devtmpfs` configuration  
 ```
 
 > Freeing unused kernel image (initmem) memory: 1024K
@@ -402,7 +412,19 @@ mount -t sysfs nodev /sys
 > Please press Enter to activate this console. random: getty: uninitialized urandom read (4 bytes read)
 > random: getty: uninitialized urandom read (4 bytes read)
 
+Note: `can't run '/etc/init.d/rcS': Permission denied` , use 
+
+```sh
+#inside `rootfs` folder
+chmod +x ./etc/init.d/rcS # to give execution permission for rcS script
+#restart
+```
+
+
 
 try `ps` now and see `/proc`, note the the nfs update take up to 60 seconds
 
-try compiling busybox again dynamically and add dynamic libraries to the system `lib` folder from crosstool-chain  (`ld-uClibc.so.0` is missing) and try to run the www server on linux operating system 
+every thing should be up and working now, Congratulations you have build a Linux image on target 
+
+
+
