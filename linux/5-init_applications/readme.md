@@ -44,7 +44,7 @@ pstree -gn
 
 minimal init program -> use configuration file **/etc/inittab**, use also **/etc/init.d** which have shell scripts under it  
 
-![image-20221103160845397](D:\OneDrive\Documents\GitHub\Linux-yocto-Excersises\linux\5-init_applications\readme.assets\image-20221103160845397.png)
+![image-20221103160845397](.\readme.assets\image-20221103160845397.png)
 
 **Buildroot** use has two scripts **rcS** and **rcK**, which are used to run **rcS<0-99>** & **rcK<0-99>**  
 
@@ -183,7 +183,7 @@ Ex.
 
 ### The init.d scripts
 
-![image-20221104142114047](D:\OneDrive\Documents\GitHub\Linux-yocto-Excersises\linux\5-init_applications\readme.assets\image-20221104142114047.png)
+![image-20221104142114047](.\readme.assets\image-20221104142114047.png)
 
 
 
@@ -516,6 +516,88 @@ Restart=on-abort
 ```
 
 Other options for **Restart** are **on-success**, **on-failure**, **on-abnormal**, **on-watchdog**, **on-abort**, or **always**
+
+
+
+
+
+# Exercise
+
+## Exercise setup
+
+we have build 3 images  using different techniques to have the 3 different initialization systems available 
+
+- **busybox init** - we already built through out the exercises
+
+- **systemv** - built using yocto default **core-minimal-image** for beaglebone-yocto machine
+
+- **systemd** - built using yocto by adding those lines in **local.conf**
+
+  - ```sh
+    DISTRO_FEATURES_append = " systemd"   # add systemd to distro features
+    DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit" # remove the systemv from distro features
+    VIRTUAL-RUNTIME_init_manager = "systemd" # assign init_manager as systemd
+    VIRTUAL-RUNTIME_initscripts = "systemd-compat-units" # assign initscripts to systemd-compact-units, allow us to use `systemctl`
+
+we  defined a folder for every File System:
+
+- `rfs_bb` for busybox
+- `bb_sysdv` for systemV
+- `bb_sysd` for systemd
+
+we set the `/etc/exports` file to 
+
+```sh
+/home/ahmed/rfs_bb 192.168.7.100(rw,no_root_squash,no_subtree_check)
+/home/ahmed/bb_sysv 192.168.7.100(rw,no_root_squash,no_subtree_check)
+/home/ahmed/bb_sysd 192.168.7.100(rw,no_root_squash,no_subtree_check)
+```
+
+run `sudo exportfs -r`
+
+
+
+Then we defined a `bootargs` variable for each in uboot
+
+```sh
+setenv bootargs_busybox "setenv bootargs console=ttyS0,115200 root=/dev/nfs ip=192.168.7.100:::::eth0 nfsroot=192.168.7.1:/home/ahmed/rfs_bb,nfsvers=3,tcp rw init=/sbin/init"
+setenv bootargs_sysv "setenv bootargs console=ttyS0,115200 root=/dev/nfs ip=192.168.7.100:::::eth0 nfsroot=192.168.7.1:/home/ahmed/bb_sysv,nfsvers=3,tcp rw init=/sbin/init"
+setenv bootargs_sysd "setenv bootargs console=ttyS0,115200 root=/dev/nfs ip=192.168.7.100:::::eth0 nfsroot=192.168.7.1:/home/ahmed/bb_sysd,nfsvers=3,tcp rw init=/sbin/init"
+saveenv
+```
+
+ 
+
+we defined a `bootcmd` variable for each in uboot
+
+```sh
+setenv bootcmd_busybox 'run bootargs_busybox; tftp 0x80200000 zImage; tftp 0x82000000 am335x-boneblack.dtb; bootz 0x80200000 - 0x82000000'
+setenv bootcmd_sysv 'run bootargs_sysv; tftp 0x80200000 zImage_sysv; tftp 0x82000000 am335x-boneblack_sys.dtb; bootz 0x80200000 - 0x82000000'
+setenv bootcmd_sysd 'run bootargs_sysd; tftp 0x80200000 zImage_sysd; tftp 0x82000000 am335x-boneblack_sys.dtb; bootz 0x80200000 - 0x82000000'
+saveenv
+```
+
+
+
+to run any of the 3 init images we only have to stop in u-boot and run one of the 3 commands mentioned below
+
+```sh
+run bootcmd_busybox
+#or
+run bootcmd_sysv
+#or
+run bootcmd_sysd
+```
+
+
+
+Note: 
+
+you may have to run `sudo chown -R root:root . ` inside rootfilesystem files on pc, if you faced this error at login
+
+> beaglebone-yocto login: root
+> login: can't set groups: Operation not permitted
+> Poky (Yocto Project Reference Distro) 3.1.20 beaglebone-yocto /dev/ttyS0
 
 
 
