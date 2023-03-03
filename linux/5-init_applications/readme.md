@@ -2,7 +2,7 @@
 
 We will follow the data described in [here-ch13-Mastering-Embedded-Linux](https://learning.oreilly.com/library/view/mastering-embedded-linux/9781789530384/B11566_13_Final_NM_ePub.xhtml#_idParaDest-328) 
 
-There are many possible impelmentations of **init** but here we discuss:
+There are many possible implementations of **init** but here we discuss:
 
 - Busybox init
 - System V init
@@ -42,7 +42,7 @@ pstree -gn
 
 ## Busybox init
 
-minimal init program -> use configuration file **/etc/inittab**, use also **/etc/init.d** which have shell scripts under it  
+minimal init program -> use configuration file **/etc/inittab**, use also **/etc/init.d** which have shell scripts under it
 
 ![image-20221103160845397](.\readme.assets\image-20221103160845397.png)
 
@@ -134,11 +134,26 @@ id:runlevels:action:process
 - **action**: One of the keywords given in the following paragraph. same as busybox
 - **process**: The command to run.
 
+#### Actions
+
+The actions are as follows:
+
+**sysinit**: Runs the program when init starts before any of the other types
+of actions.
+**respawn**: Runs the program and restarts it if it terminates. It is typically used to run a program as a daemon.
+**askfirst**: This is the same as respawn, but it prints the message Please press Enter to activate this console to the console, and it runs the program after Enter has been pressed. It is used to start an interactive shell on
+a terminal without prompting for a username or password.
+**once**: Runs the program once but does not attempt to restart it if it terminates.
+**wait**: Runs the program and waits for it to complete.
+**restart**: Runs the program when init receives the SIGHUP signal, indicating that it should reload the inittab file.
+**ctrlaltdel**: Runs the program when init receives the SIGINT signal, usually as a result of pressing Ctrl + Alt + Del on the console.
+**shutdown**: Runs the program when init shuts down.
 
 
-complete **inittap** supplied by the yocto project **core-image-minimal** for the **qemuarm** machine -> **check in yocto**
 
-Ex. 
+complete **inittab** can be supplied by the yocto project **core-image-minimal** for the **qemuarm** machine -> **check in yocto**
+
+Example of **inittab**
 
 - **id:5:initdefault**, sets the default **runlevel** to **5**.
 
@@ -262,8 +277,6 @@ work with **glibc** don't with **ulibc** nor **musl**
 
 [Link to systemd code](https://github.com/systemd/systemd), Requiremets are in **README** 
 
-
-
 yocto default is "System V" but can be changed by setting in **local.conf** `INIT_MANAGER = "systemd"`
 
 
@@ -274,6 +287,17 @@ yocto default is "System V" but can be changed by setting in **local.conf** `INI
 
 - **A configuration file** that describe a target, a service and several other things.
 - text files that contain properties and values
+- `systemd units` is what you need to start.
+
+  types of systemd units:
+
+  - Service
+  - Mount
+  - Timer
+  - Automount
+  - Target
+  - Path
+  - and more
 
 **service:**
 
@@ -281,7 +305,11 @@ yocto default is "System V" but can be changed by setting in **local.conf** `INI
 
 **target:**
 
-- **A group** of services, similar to runlevel but more generic
+- **A group** of services
+
+  - a target can run another target, in a tree of dependencies
+  - when the `allow_isolate=yes` then the target file is the endpoint of execution. only then target is considered as a run level.
+
 - **Default target**: is the group of services that are started at boot time.
 
   
@@ -296,11 +324,9 @@ yocto default is "System V" but can be changed by setting in **local.conf** `INI
 
 **systemd** searches directories in that order, you can override the  **/lib/systemd/system (distro conf)** by adding unit file in **/etc/systemd/system**
 
-
-
 All unit files begin with a section marked **[Unit]**
 
-Unit section contain basic information and dependencies
+**Unit section** contain basic information and dependencies
 
 Ex, **D-Bus service**
 
@@ -329,7 +355,7 @@ Description, Documentation link and dependency (**required**)
 
 **incoming dependencies** (used to create links between services and targets)
 
-- **WantedBy**: 
+- **WantedBy**: can be used to attach your service to specific target
 
 
 
@@ -505,8 +531,6 @@ This is exactly the same as adding the dependent unit to the **[Wants]** list in
 
 
 
-
-
 If this is an important service, you might want to **restart it if it fails**. You can accomplish that by adding this flag to the **[Service]** section:
 
 ```sh
@@ -601,3 +625,262 @@ you may have to run `sudo chown -R root:root . ` inside rootfilesystem files on 
 
 
 
+## side command
+
+```sh
+sudo ip addr add 192.168.7.1/24 dev enp42s0
+# make sure no other interfaces with the same ip
+```
+
+## Exercise
+
+ we need to start our application `readapp` in startup in 3 cases:
+
+- busybox init
+- systemv init
+- systemd init
+
+we will use a statically build version of the `readapp` application
+
+1. we copy `readapp` into the `/bin` folder inside the 3 file systems and make sure that it have execution permission `chmod +x readapp`
+
+2. we create the scripts mentioned in each section 
+
+3. `reboot` and start the target -> the application should start  and you should see
+
+   ```sh
+   Making threadpool with 4 threads
+   Thread #3044616096 working on stdinRead
+   Text from stdin: 
+   Thread #3053008800 working on opening file filename
+   open_read_file() open() failed: No such file or directory
+   open_read_file() read() failed: Bad file descriptor
+   
+   ```
+
+4. `shutdown now` we should see the application terminating 
+
+   ```sh
+   shuting down the readapp application
+   ```
+
+   
+
+### busybox init
+
+in busybox init to start and shutdown an application we create 2 files and modify `inittab` to add those files to execution
+
+- `/etc/init.d/rcS1`
+
+  ```sh
+  echo "rcs1 is here"
+  readapp &
+  ```
+
+- `/etc/init.d/rcK1`
+
+  ```sh
+  echo "shuting down the readapp application"
+  pkill -e readapp
+  sleep 3
+  ```
+
+- we add two lines to the `inittab`
+
+  ```sh
+  # execute at start of the system
+  ::sysinit:/etc/init.d/rcS1
+  
+  # execute at shutdown of the system 
+  ::shutdown:/etc/init.d/rcK1
+  ```
+
+
+
+### SystemV init
+
+in SystemV we have to 
+
+- create a script that starts, stop the application `/etc/init.d/readapp`
+
+`/etc/init.d/readapp`
+
+```sh
+#! /bin/sh
+case "$1" in
+      start)
+           echo "Starting readapp........."
+           start-stop-daemon -S -n readapp -a /bin/readapp &
+           ;;
+     stop)
+           echo "Stopping readapp........."
+           start-stop-daemon -K -n readapp
+           ;;
+     *)
+           echo "Usage: $0 {start|stop}"
+           exit 1
+esac
+exit 0
+```
+
+- we can now start and stop application with 
+
+  - usage
+
+  ```sh
+  /etc/init.d/readapp --help
+  ```
+
+  > Usage: /etc/init.d/readapp {start|stop}
+
+  - stop service
+
+  ```sh
+  /etc/init.d/readapp stop
+  ```
+
+  > Thread #3044943776 working on stdinRead
+  > Text from stdin: 
+  > Thread #3053336480 working on opening file filename
+  > open_read_file() open() failed: No such file or directory
+  > open_read_file() read() failed: Bad file descriptor
+  >
+  > printing_demon is up and running
+
+  - start service
+
+  ```sh
+  /etc/init.d/readapp start
+  ```
+
+  >  Stopping readapp.........
+  >  Terminated
+  >  Stoping readapp application........
+  >
+  >  stopped readapp (pid 293 288)
+
+  
+
+- then add this script to one of the `rc<x>.d` folders to specify on what run level we will start the application
+
+  ```sh
+  # from file system root we create a symbolic link to our application and place it in one of the rc<runlevel> folders(runlevel)
+  ln -s ../init.d/readapp ./etc/rc5.d/S40readapp.sh
+  # this simplic link file is named `S40`, S -> will call our script with `start` as argument, `40` priority or order of execution
+  ```
+
+- To kill the application at when getting in specific runlevel we create similar symbolic link
+
+  ```sh
+  ln -s ../init.d/readapp ./etc/rc5.d/K40readapp.sh
+  ln -s ../init.d/readapp ./etc/rc4.d/K40readapp.sh
+  ```
+
+  to kill the application we execute
+
+  ```sh
+  telinit 4 # switching to runlevel 4 will kill the application
+  ```
+
+
+
+### Systemd init
+
+In Systemd we
+
+- we need to create  in systemd filesystem `./etc/systemd/system/readapp.service`
+
+```sh
+[Unit]
+Description=readapp server
+[Service]
+Type=simple
+ExecStart=/bin/readapp
+
+[Install]
+WantedBy=multi-user.target
+```
+
+then you can start and stop it using 
+
+```sh
+# start readapp program
+systemctl start readapp
+```
+
+>no output
+
+but if you execute `ps ` command on terminal it will show that the application is running  
+
+```sh
+# stop readapp program
+systemctl stop readapp
+```
+
+> no output
+
+but if you execute `ps ` command on terminal it will show that the application is **not** there  
+
+using 
+
+```sh
+systemctl status readapp
+```
+
+> * readapp.service - readapp server
+>      Loaded: loaded (/etc/systemd/system/readapp.service; disabled; vendor preset: disabled)
+>      Active: inactive (dead)
+>
+> Sep 20 10:53:37 beaglebone-yocto readapp[158]: printing_demon is up and running
+> Sep 20 10:53:57 beaglebone-yocto readapp[158]: printing_demon is up and running
+> Sep 20 10:53:57 beaglebone-yocto readapp[158]: printing_demon is up and running
+> Sep 20 10:53:57 beaglebone-yocto readapp[158]: printing_demon is up and running
+> Sep 20 10:53:57 beaglebone-yocto readapp[158]: printing_demon is up and running
+> Sep 20 10:53:57 beaglebone-yocto readapp[158]: printing_demon is up and running
+> Sep 20 10:53:57 beaglebone-yocto readapp[158]: Stoping readapp application........
+> Sep 20 10:53:57 beaglebone-yocto systemd[1]: Stopping readapp server...
+> Sep 20 10:53:57 beaglebone-yocto systemd[1]: readapp.service: Succeeded.
+> Sep 20 10:53:57 beaglebone-yocto systemd[1]: Stopped readapp server.
+
+At this point, it will only start and stop on command
+
+to see the full log of our application we 
+
+```sh
+journalctl -u readapp.service
+#or for current boot only
+journalctl -u readapp.service -b 
+```
+
+> 
+
+To make it **persistent**, **permanent** (application will boot for multiuser.target by default) we execute -------> **[Install]** section purpose
+
+```sh
+systemctl enable readapp
+```
+
+> Created symlink /etc/systemd/system/multi-user.target.wants/readapp.service -> /etc/systemd/system/readapp.service.
+
+then restart 
+
+```sh
+reboot
+ps # not application is there Executing 
+```
+
+> ... 
+>
+> 147 root     35644 S    /bin/readapp
+>
+> ...
+
+**Note:** 
+
+Now, you can see how services add dependencies without having to keep on editing target unit files. A target can have a directory named **<target_name>.target.wants**, which can contain links to services.
+
+This is exactly the same as adding the dependent unit to the **[Wants]** list in the target.
+
+
+
+**TODO:** can you make the application log to terminal like systemv and busybox ? 
