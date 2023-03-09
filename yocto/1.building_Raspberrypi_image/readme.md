@@ -16,20 +16,33 @@ we picked up **Dunfell** branch
 ```sh
 # getting poky
 git clone git://git.yoctoproject.org/poky
-git checkout Dunfell
+git checkout dunfell
 ```
 
-  we also goto https://layers.openembedded.org/layerindex/ move the branch to **Dunfell** check if the raspberry pi meta layer exist:
+  we also goto https://layers.openembedded.org/layerindex/ move the branch to **dunfell** check if the raspberry pi meta layer exist:
 
 - [meta-raspberrypi](https://layers.openembedded.org/layerindex/branch/dunfell/layer/meta-raspberrypi/) exist -> checking link you can see recipes, machines, appends and classes that exist on this branch 
 
-- download and checkout the **Dunfell** branch
+- download and checkout the **dunfell** branch
 
   ```sh
   # getting meta-raspberrypi
   git clone git://git.yoctoproject.org/meta-raspberrypi
-  git checkout Dunfell
+  git checkout dunfell
   ```
+
+- we can also download other multiple layers using
+
+  ```sh
+  git clone https://github.com/meta-qt5/meta-qt5.git
+  git checkout dunfell
+  git clone git://git.yoctoproject.org/meta-ti 
+  git checkout dunfell
+  git clone git://git.openembedded.org/meta-openembedded
+  git checkout dunfell
+  ```
+
+  
 
 NOTE: 
 
@@ -164,6 +177,14 @@ PARALLEL_MAKE = "-j 8"
 
 ```
 
+it's also useful to set `DL_DIR`, `SSTATE_DIR` and `TMPDIR` to avoid replicating data in different build folders if you are planning multiple builds in `build/local.conf`
+
+```sh
+DL_DIR = "/home/ahmed/yocto-training/yocto/downloads"
+SSTATE_DIR ?= "/home/ahmed/yocto-training/yocto/sstate-cache"
+TMPDIR = "/home/ahmed/yocto-training/yocto/tmp"
+```
+
 
 
 ### Building
@@ -230,7 +251,7 @@ under **tmp/** you can find also:
 
 we need now to flash the output image to SD card of raspberry pi, but first let's have a look at how is the raspberrypi boot sequance ?
 
-![Screenshot from 2022-09-08 05-12-24](readme.assets/Screenshot from 2022-09-08 05-12-24.png)
+![Screenshot from 2022-09-08 05-12-24](./readme.assets/Screenshot from 2022-09-08 05-12-24.png)
 
 goto `build/tmp/deploy/images/\<raspberrypi>/bootfiles` you will find all the files mentioned in the boot sequence diagram.
 
@@ -277,11 +298,82 @@ this will output a single binary file `core-image-minimal-raspberrypi2.rpi-sdimg
 sudo dd if=tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2.rpi-sdimg of=/dev/sdb bs=1M
 ```
 
+after this we have to insert the  SD card and power on Raspberry pi,  you should have Linux up and running on Raspberry pi 
 
 
 
+# Building Beagle bone Image
 
-after this we have to insert the  SD card and power on Raspberry pi,  you should have linux up and running on Raspberrypi 
+to Build beaglebone we clone the `meta-ti` layer using
+
+```sh
+git clone git://git.yoctoproject.org/meta-ti
+```
+
+- if we then `source oe-init-build-env bb-build`  
+
+- add `poky` and `meta-ti` paths to `bblayers.conf`
+- `git checkout dunfell` for each layer
+- try `bitbake core-image-minimal` you will get 
+
+> ERROR: Layer 'meta-ti' depends on layer 'meta-arm', but this layer is not enabled in your configuration
+
+there can be some meta layers that depend or need some other layers
 
 
 
+Final version of `bb-build/conf/bblayers.conf` after fixing dependencies and adding `meta-qt5` layer
+
+```sh
+# POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
+# changes incompatibly
+POKY_BBLAYERS_CONF_VERSION = "2"
+
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
+
+BBLAYERS ?= " \
+  /home/ahmed/yocto-training/yocto/layers/poky/meta \
+  /home/ahmed/yocto-training/yocto/layers/poky/meta-poky \
+  /home/ahmed/yocto-training/yocto/layers/poky/meta-yocto-bsp \
+  /home/ahmed/yocto-training/yocto/layers/meta-ti \
+  /home/ahmed/yocto-training/yocto/layers/meta-openembedded/meta-oe \
+  /home/ahmed/yocto-training/yocto/layers/meta-openembedded/meta-python \
+  /home/ahmed/yocto-training/yocto/layers/meta-openembedded/meta-networking \
+  /home/ahmed/yocto-training/yocto/layers/meta-openembedded/meta-perl \
+  /home/ahmed/yocto-training/yocto/layers/meta-qt5 \
+  /home/ahmed/yocto-training/yocto/layers/meta-arm/meta-arm \
+  /home/ahmed/yocto-training/yocto/layers/meta-arm/meta-arm-bsp \
+  /home/ahmed/yocto-training/yocto/layers/meta-arm/meta-arm-toolchain \
+  /home/ahmed/yocto-training/yocto/layers/meta-arm/meta-arm-autonomy \
+  /home/ahmed/yocto-training/yocto/layers/meta-virtualization \
+  /home/ahmed/yocto-training/yocto/layers/meta-openembedded/meta-filesystems \
+  "
+~                
+```
+
+ 
+
+and for `local.conf` we can point to the same folders as raspberrypi it will save us some time as most of the needed packages are already downloaded there 
+
+```sh
+DL_DIR = "/home/ahmed/yocto-training/yocto/downloads"
+SSTATE_DIR ?= "/home/ahmed/yocto-training/yocto/sstate-cache"
+TMPDIR = "/home/ahmed/yocto-training/yocto/tmp"
+# MACHINE
+MACHINE="beaglebone"
+```
+
+ and set also set the `MACHINE` to `beaglebone` 
+
+
+
+then 
+
+```sh
+bitbake core-image-base 
+```
+
+it will build and place the final images in `tmp/deploy/images`
+
+you can download output images as discussed before either put All images and filesystem on SD card and boot from there or you can place only bootloader on SD card and use it to flash kernel over network and to have a network file system
