@@ -51,9 +51,38 @@ Root file system will be on the host machine on `/nfs`
 
 # adding custom layer
 
+we can add custom layers using `bitbake-layers` from inside`poky`/ 
 
+```sh
+source oe-init-build-env ../bb-build
+# bitbake-layers is available now, location inside build
+bitbake-layers create-layer ../meta-sw
+bitbake-layers add ../meta-sw
+bitbake-layers show-layers
+```
+
+> layer                 path                                      priority
+> ==========================================================================
+> ...
+> meta-sw               /home/ahmed/Documents/yocto_organized/layers/meta-sw  6
+
+you can navigate through meta-sw folder, `tree ../meta-sw`
+
+![image-20230311093938882](./assets/image-20230311093938882.png)
+
+we can start adding our recipes to this layer 
 
 # adding custom application
+
+Refer to [This link](https://github.com/ahmedhussien91/ycoto-excersise.git) for code of this layer
+
+### gcc
+
+
+
+### Make
+
+### CMAKE
 
 
 

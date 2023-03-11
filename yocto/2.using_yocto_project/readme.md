@@ -166,7 +166,7 @@ note that the machine is selected in the `local.conf` file, looks like the sequa
 
 
 
-### IMAGE_INSTALL
+### IMAGE_INSTALL Exercise
 
 let's check the IMAGE_INSTALL in the .json file
 
@@ -176,10 +176,10 @@ cat ./poky/build/tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2-
 
 > "IMAGE_INSTALL": "packagegroup-core-boot ", 
 
-includes only the packages required to boot the linux system, let's add SSH support to the image by adding those lines to local.conf
+includes only the packages required to boot the linux system, let's add **SSH** support to the image by adding those lines to `local.conf`
 
 ```sh
-IMAGE_INSTALL_append = "openssh"
+IMAGE_INSTALL_append = " openssh"
 ```
 
 then rebuild the image using 
@@ -192,7 +192,8 @@ dd if=poky/build/tmp/deploy/images/raspberrypi2/core-image-minimal-raspberrypi2.
 to configure ip your address you can use 
 
 ```sh
-ifconfig <interfac-name> <ip-address>/<subnet> # ex. ifconfig enp0s3 192.168.178.32/24
+# ifconfig <interfac-name> <ip-address>/<subnet> # ex. 
+ifconfig enp0s3 192.168.178.32/24
 ```
 
 you are now ready to test **ssh** on your raspberrypi after placing the sd card on to the raspberrypi
@@ -326,7 +327,7 @@ let's write our first recipe in the `syntax1/` we will make a file `syntax-trail
 touch syntax-trial_1.0.bb
 ```
 
- open the recipe and add these lines to add a task **display** for this recipe that we will use to print the output 
+ open `syntax-trail_1.0.bb` recipe and add these lines to add a task **display** for this recipe that we will use to print the output 
 
 ```sh
 SUMMARY = "syntax recipe"
@@ -341,35 +342,40 @@ python do_display() {
 addtask display before do_build
 ```
 
-save and let's try to bitbake this recipe but first for this to work we need to add out layer to the **bblayer.conf** for the bitbake to see it.
+to run this recipe we need to:
 
-after doing so we execute our recipe using
+-  add new layer `meta-custom` to **bblayer.conf**
 
-```sh
-bitbake syntax-trial
-```
+- prepare env and execute recipe
 
->...
->
->NOTE: Executing Tasks
->welcome to syntax testing - plain
->NOTE: Tasks Summary: Attempted 543 tasks of which 541 didn't need to be rerun and all succeeded.
->
->Summary: There was 1 WARNING message shown.
+  ```sh
+  source oe-init-build-env
+  bitbake syntax-trial
+  ```
+
+  > ...
+  >
+  > NOTE: Executing Tasks
+  > welcome to syntax testing - plain
+  > NOTE: Tasks Summary: Attempted 543 tasks of which 541 didn't need to be rerun and all succeeded.
+  >
+  > Summary: There was 1 WARNING message shown.
 
 Note that only `bb.plain("welcome to syntax testing - plain")` was displayed 
 
-let's navigate throught recipe's work directory
+
+
+let's navigate through recipe's work directory
 
 ![image-20221029085742399](./assets/image-20221029085742399.png)
 
-one of the most important folders is the `temp` folder, notice  while going through
+one of the most important folders is the `temp` folder:
 
-- there is two types of files one that start **log** and one that start with **run**
+- There is two types of files one that start **log** and one that start with **run**
 - the names of the files is the same as **tasks**
 - note that we have `run.do_display` and `log.do_display`
 
-folder that start **log** for example **log.do_display** will contain the output of the function in execution
+for **log** for example **log.do_display** will contain the output of the task `do_display`
 
 ```sh
 DEBUG: Executing python function do_display
@@ -380,7 +386,7 @@ welcome to syntax testing - printing
 
 Note `welcome to syntax testing - plain` and `welcome to syntax testing - printing`
 
-for **run** for example **run.do_display** will contain the function that was executed in our case a python script that will do the following:
+for Execution output check `run.do_display` file will contain what was executed:
 
 ```sh
 def do_display(d):
@@ -392,15 +398,25 @@ do_display(d)
 
 
 
+Note here:
+
+- we added a task that Executed as a part of recipe execution after `do_build`
+- if we added only `addtask display` we have to run `bitbake -c display syntax-trial` to execute **display** task, specify task 
+- **run** and **log** files are good for debugging
+
+
+
 ### = trial2
 
 [up](###Remember)
 
-this trial should show the difference between the `=` and `:=` , create another file `syntax-trial2_1.0.bb` under `syntax2/`folder.
+This trial should show the difference between the `=` and `:=` 
+
+Under folder `meta-custom/recipes-lap2/` create `syntax2/syntax-trial2_1.0.bb` 
 
 **syntax-trial2_1.0.bb**
 
-```
+```sh
 SUMMARY = "syntax recipe"
 DESCRIPTION = "Recipe for testing yocto recipes syntax"
 LICENSE = "MIT"
@@ -433,6 +449,8 @@ addtask display before do_build
 run `bitbake -c display  syntax-trial2` and comment and uncomment lines to know the difference 
 
 modify the same script to do this exercises to know the differnance between [??=](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#setting-a-weak-default-value),  [+= and =+](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#setting-a-weak-default-value), [.= and =.](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#appending-and-prepending-without-spaces), [append and preappend](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-metadata.html#appending-and-prepending-override-style-syntax), 
+
+
 
 ### Overrides style (append) advantage over +=
 
