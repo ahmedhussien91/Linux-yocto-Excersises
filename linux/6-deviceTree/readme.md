@@ -78,3 +78,4 @@ What is device tree ?
   - [slides](https://bootlin.com/pub/conferences/2021/webinar/petazzoni-device-tree-101/petazzoni-device-tree-101.pdf)
 - [good references for device tree](https://elinux.org/Device_Tree_Reference)
 - https://elinux.org/Device_Tree_Usage
+- [Linux Device Drivers Platform](https://www.youtube.com/watch?v=pIUTaMKq0Xc)
