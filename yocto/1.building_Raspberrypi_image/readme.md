@@ -9,6 +9,13 @@ Identifying the branch to work on:
 - we usually pick the LTS branch(long time support branch) as it's the branch that can have work on it and buggs can be fixed if found
 - you can be forced to use other EOL branches as the vendor you are working with only support this branch 
 
+Install Requirements using command:
+
+```sh
+sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+     build-essential chrpath socat libsdl1.2-dev xterm
+```
+
 
 
 we picked up **Dunfell** branch
