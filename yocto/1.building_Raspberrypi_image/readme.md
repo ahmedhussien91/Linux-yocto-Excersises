@@ -364,11 +364,7 @@ TMPDIR = "/home/ahmed/yocto-training/yocto/tmp"
 MACHINE="beaglebone"
 ```
 
- and set also set the `MACHINE` to `beaglebone` 
-
-
-
-then 
+ and set also set the `MACHINE` to `beaglebone` then 
 
 ```sh
 bitbake core-image-base 
@@ -377,3 +373,4 @@ bitbake core-image-base
 it will build and place the final images in `tmp/deploy/images`
 
 you can download output images as discussed before either put All images and filesystem on SD card and boot from there or you can place only bootloader on SD card and use it to flash kernel over network and to have a network file system
+

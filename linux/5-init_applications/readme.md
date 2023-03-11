@@ -117,7 +117,7 @@ when switching between runlevels
 
 The author note
 
-In truth, runlevels are not used that much in embedded Linux: most devices simply boot to the default runlevel and stay there. I have a feeling that it is partly because most people are not aware of them.
+In truth, **runlevels** are not used that much in embedded Linux: most devices simply boot to the default runlevel and stay there. I have a feeling that it is partly because most people are not aware of them.
 
 ### inittab
 
@@ -761,12 +761,12 @@ exit 0
 
   
 
-- then add this script to one of the `rc<x>.d` folders to specify on what run level we will start the application
+- then add this script to one of the `/etc/rc<x>.d/` folders to specify on what run level we will start the application
 
   ```sh
   # from file system root we create a symbolic link to our application and place it in one of the rc<runlevel> folders(runlevel)
   ln -s ../init.d/readapp ./etc/rc5.d/S40readapp.sh
-  # this simplic link file is named `S40`, S -> will call our script with `start` as argument, `40` priority or order of execution
+  # this simplic link file is named `S40`, S -> will call our script with `start` as argument, `40` order of execution
   ```
 
 - To kill the application at when getting in specific runlevel we create similar symbolic link
