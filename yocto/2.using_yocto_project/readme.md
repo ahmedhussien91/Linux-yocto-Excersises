@@ -287,7 +287,7 @@ see [this](https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-use
 
 ### Remember:
 
-- all variables in bitbake is string 
+- all variables in bitbake is **string** 
 - recipes consist of header, source and tasks
 - syntax written in recipes are python or shell 
 - variables are set -> `A = "value"` used with syntax`${A}`
