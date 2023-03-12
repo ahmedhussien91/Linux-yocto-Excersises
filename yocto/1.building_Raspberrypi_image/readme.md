@@ -1,5 +1,12 @@
 # Building Raspberry pi Image
 
+before starting please install Requirements using:	
+
+```sh
+sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+build-essential chrpath socat libsdl1.2-dev xterm
+```
+
 ## Downloading poky and Raspberry pi meta layer
 
 we need to download poky from [here](https://git.yoctoproject.org/poky) but first we need to identify which branch to work on
@@ -8,15 +15,6 @@ Identifying the branch to work on:
 
 - we usually pick the LTS branch(long time support branch) as it's the branch that can have work on it and buggs can be fixed if found
 - you can be forced to use other EOL branches as the vendor you are working with only support this branch 
-
-Install Requirements using command:
-
-```sh
-sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
-     build-essential chrpath socat libsdl1.2-dev xterm
-```
-
-
 
 we picked up **Dunfell** branch
 
@@ -115,6 +113,8 @@ source ./oe-init-build-env # would generate folder `build` if variable wasnot pa
 SATO User interface:
 
 ![Yocto Project Quick Start Guide for Ubuntu - CNX Software](readme.assets/yocto_sato_ui_qemu.png)
+
+
 
 ### Configuring the build
 
