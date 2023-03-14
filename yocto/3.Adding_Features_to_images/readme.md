@@ -74,15 +74,80 @@ we can start adding our recipes to this layer
 
 # adding custom application
 
-Refer to [This link](https://github.com/ahmedhussien91/ycoto-excersise.git) for code of this layer
+Refer to [This link](https://github.com/ahmedhussien91/ycoto-excersise.git) for code of this layer, to start working with this layer you need to 
+
+```sh
+git clone https://github.com/ahmedhussien91/ycoto-excersise.git
+cd yocto-excersise
+./clone_layers
+./bitbake_bb_rpi # to build the Excersise for both raspberrypi & beaglebone
+```
+
+In the upcoming sections we will see how to write a recipe for different applications using different build systems like make and cmake but first let's see how to compile using gcc
+
+our work will be on `meta-sw/recipes-sw` folder 
 
 ### gcc
 
+we first will try to build and install **errApp** inside `meta-sw/recipes-sw/errorApp` we will place our code inside folder `meta-sw/recipes-sw/errorApp/files/src` and create this recipe `meta-sw/recipes-sw/errorApp/error-gcc_1.0.bb`
 
+**error-gcc_1.0.bb**
+
+```bash
+DESCRIPTION = "program that generates an error looking for file aa"
+LICENSE = "CLOSED"
+
+SRC_URI = "file://src"
+S="${WORKDIR}/src"
+LDFLAGS=""
+
+do_compile(){
+	#compile applicacation using gcc 
+	$CC -c -g -Wall error_functions.c 
+	$CC -c -g -Wall get_num.c 
+	$CC -c -g -Wall main.c 
+	$CC -o test error_functions.o get_num.o main.o	
+}
+
+do_install () {
+	mkdir -p ${D}${bindir}
+	cp ${S}/test ${D}${bindir}
+	chmod -R 0777 ${D}
+}
+```
 
 ### Make
 
+**error-gcc_2.0.bb** is a modified version that use make which is the default of the task `do_compile()`, and we use `install` shell command to copy to `image` folder with specific hierarchy, if the recipe is installed into image this folder will be copied to the final root file system
+
+```sh
+DESCRIPTION="test custom application"
+LICENSE="CLOSED"
+
+SRC_URI ="file://src"
+
+S="${WORKDIR}/src"
+
+TARGET_CC_ARCH += "${LDFLAGS}"
+
+do_compile_append(){
+	echo "working directory: $PWD"
+	echo "make is called by default......."
+}
+
+do_install() {
+	install -d ${D}${bindir}
+	install -m 0755 test ${D}${bindir}
+}
+```
+
+
+
 ### CMAKE
+
+### Qt
+
+
 
 
 
