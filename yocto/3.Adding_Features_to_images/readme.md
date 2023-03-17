@@ -433,6 +433,54 @@ INITSCRIPT_PARAMS_${PN}-ftpd = "start 99 5 2 . stop 20 0 1 6 ."
 
 # Creating custom image
 
+We need to create our custom image to include our applications by default instead of putting everything in the `local.conf` file to do so inside `meta-sw/` we:
+
+```sh
+mkdir -p recipes-core/images
+cd recipes-core/images
+cp ../../../poky/meta/recipes-core/images/core-image-base.bb custom-image.inc
+```
+
+we will use the `core-image-base.bb` as base for our images, then we impelement the following two custom images:
+
+**custom-image-sysv.bb**
+
+```sh
+include custom-image.inc
+
+IMAGE_INSTALL_append = " openssh \
+						 error-gcc \
+						 read-app \
+						 "
+IMAGE_FSTYPES_append = " tar"
+
+# PREFERRED_VERSION_error-gcc = "1.0"
+```
+
+**custom-image-sysd.bb**
+
+```sh
+include custom-image.inc
+
+IMAGE_INSTALL_append = " openssh \
+						 error-gcc \
+						 read-app \
+						 "
+IMAGE_FSTYPES_append = " tar"
+
+# PREFERRED_VERSION_error-gcc = "1.0"
+
+# add systemd support
+# add systemd to distro features
+DISTRO_FEATURES_append = " systemd"   
+# remove the systemv from distro features
+DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit" 
+# assign init_manager as systemd
+VIRTUAL-RUNTIME_init_manager = "systemd" 
+# assign initscripts to systemd-compact-units, allow us to use `systemctl`
+VIRTUAL-RUNTIME_initscripts = "systemd-compat-units" 
+```
+
 
 
 # Features
