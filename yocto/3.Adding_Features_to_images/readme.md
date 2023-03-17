@@ -145,13 +145,291 @@ do_install() {
 
 ### CMAKE
 
+let's try to build our [read-app](https://github.com/ahmedhussien91/posix-app) that was built using cmake. we create a recipe **readapp_1.0.bb**
+
+```sh
+DESCRIPTION = "The software is for testing, it will only print what is passed on stdin, it also has another thread that always prints" 
+HOMEPAGE = "https://github.com/ahmedhussien91/posix-app"
+# package category (e.g. console/utils), check http://www.embeddedlinux.org.cn/OEManual/section_variable.html
+SECTION = "console" 
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+# LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+# use if the license if on git TODO  
+# LIC_FILES_CHKSUM = "file://${WORKDIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302" 
+
+# point to the source on git
+SRC_URI = "git://github.com/ahmedhussien91/posix-app.git;protcol=https;branch=main"
+# git commit hash
+SRCREV = "693c11bd4844e85f795bd4b960f842a7bdf8a75d"
+
+# this where the code will be downloaded when it's fetched from git
+S = "${WORKDIR}/git"
+
+#inherit cmake.bbclass to configure, compile and install program using cmake
+inherit cmake
+```
+
+### Libraries
+
+We will do the same steps done in the Linux native compilation exercise compiling the `error-gcc` but using static and dynamic libraries
+
+#### Static Libraries
+
+for this we create also`meta-sw/recipes-libs/error-functions/get-num_1.0.bb`
+
+```sh
+DESCRIPTION = "program that generates an error looking for file aa"
+LICENSE = "CLOSED"
+
+SRC_URI = "file://src"
+S="${WORKDIR}/src"
+LDFLAGS=""
+
+# compile the library `libgetnum.a` 
+do_compile(){
+	$CC -c -g -Wall get_num.c 
+	$AR -crv libgetnum.a get_num.o
+}
+
+# install the library `libgetnum.a` and `get_num.h` file 
+do_install() {
+	install -d ${D}${libdir}
+    install -d ${D}${includedir}
+	install -m 0755 libgetnum.a ${D}${libdir}
+    install -m 0755 ${WORKDIR}/src/get_num.h ${D}${includedir}
+}
+```
+
+
+
+we create `meta-sw/recipes-libs/error-functions/error-functions_1.0.bb`
+
+```sh
+DESCRIPTION = "program that generates an error looking for file aa"
+LICENSE = "CLOSED"
+
+SRC_URI = "file://src"
+S="${WORKDIR}/src"
+LDFLAGS=""
+DEPENDS = "get-num"
+
+# compile the library `liberrorfun.a` 
+do_compile(){
+	$CC -c -g -Wall error_functions.c -I${STAGING_INCDIR}
+	$AR -crv liberrorfun.a error_functions.o
+}
+
+# install the library `liberrorfun.a` and `error_functions.h` file 
+do_install() {
+	install -d ${D}${libdir}
+  	install -d ${D}${includedir}
+	install -m 0755 liberrorfun.a ${D}${libdir}
+    install -m 0755 ${WORKDIR}/src/error_functions.h ${D}${includedir}
+}
+
+# packaging of the libraries is done automatically
+```
+
+and create `meta-sw/recipes-sw/errorApp/error-gcc_3.0.bb` to compile using those libraries
+
+```sh
+DESCRIPTION="test custom application"
+LICENSE="CLOSED"
+
+SRC_URI ="file://src"
+DEPENDS = "error-functions"
+S="${WORKDIR}/src"
+
+# for QA check of Linker  
+TARGET_CC_ARCH += "${LDFLAGS}"
+# INSANE_SKIP_${PN} += "ldflags"
+# check this for skipping QA checks https://docs.yoctoproject.org/ref-manual/classes.html#ref-classes-insane
+
+# compile with STATIC libraries that will exist in path `STAGING_LIBDIR`
+do_compile(){
+	$CC -o erro-app main.c ${STAGING_LIBDIR}/libgetnum.a 	${STAGING_LIBDIR}/liberrorfun.a
+}
+
+do_install() {
+	install -d ${D}${bindir}
+	install -m 0755 erro-app ${D}${bindir}
+}
+```
+
+
+
+#### Dynamic Libraries
+
+for the use of dynamic libraries we created `meta-sw/recipes-libs/get-num/get-num_2.0.bb`
+
+```sh
+DESCRIPTION = "program that generates an error looking for file aa"
+LICENSE = "CLOSED"
+
+SRC_URI = "file://src"
+S="${WORKDIR}/src"
+LDFLAGS=""
+
+# compile `libgetnum.so.${PV}` and set soname 
+do_compile(){
+	$CC -fpic -c -g -Wall get_num.c 
+	$CC -shared -Wl,-soname,libgetnum.so -o libgetnum.so.${PV} get_num.o
+}
+
+# not that we used `oe_soinstall` instead of `install` 
+do_install() {
+	install -d ${D}${libdir}
+    install -d ${D}${includedir}
+	oe_soinstall libgetnum.so.${PV} ${D}${libdir}
+    install -m 0755 ${WORKDIR}/src/get_num.h ${D}${includedir}
+}
+```
+
+`meta-sw/recipes-libs/error-functions/error-functions_2.0.bb`
+
+```sh
+DESCRIPTION = "program that generates an error looking for file aa"
+LICENSE = "CLOSED"
+
+SRC_URI = "file://src"
+S="${WORKDIR}/src"
+LDFLAGS=""
+DEPENDS = "get-num"
+RDEPENDS_${PN} = "get-num"
+
+do_compile(){
+	$CC -c -g -Wall error_functions.c -I${STAGING_INCDIR}
+	$CC -shared -Wl,-soname,liberrorfun.so -o liberrorfun.so.${PV} error_functions.o
+}
+
+do_install() {
+	install -d ${D}${libdir}
+	install -d ${D}${includedir}
+	oe_soinstall liberrorfun.so.${PV} ${D}${libdir}
+    install -m 0755 ${WORKDIR}/src/error_functions.h ${D}${includedir}
+}
+```
+
+create `meta-sw/recipes-sw/errorApp/error-gcc_4.0.bb` to compile using those dynamic libraries
+
+```sh
+DESCRIPTION="test custom application"
+LICENSE="CLOSED"
+
+SRC_URI ="file://src"
+DEPENDS = "error-functions"
+S="${WORKDIR}/src"
+
+
+TARGET_CC_ARCH += "${LDFLAGS}"
+
+# compile with shared libraries, including `STAGING_LIBDIR`
+do_compile(){
+	$CC -o erro-app main.c -L${STAGING_LIBDIR} -lgetnum -lerrorfun
+}
+
+do_install() {
+	install -d ${D}${bindir}
+	install -m 0755 erro-app ${D}${bindir}
+}
+```
+
 
 
 ### Qt
 
+TODO
 
 
 
+# Updating Application Recipes to use systemV and Systemd
+
+create `meta-sw/recipes-sw/errorApp/error-gcc_5.0.bb` to compile using those dynamic libraries
+
+```sh
+DESCRIPTION="test custom application"
+LICENSE="CLOSED"
+
+SRC_URI ="file://src"
+DEPENDS = "error-functions"
+S="${WORKDIR}/src"
+
+inherit  update-rc.d systemd
+
+TARGET_CC_ARCH += "${LDFLAGS}"
+
+# compile with shared libraries, including `STAGING_LIBDIR`
+do_compile(){
+	$CC -o erro-app main.c -L${STAGING_LIBDIR} -lgetnum -lerrorfun
+}
+
+do_install() {
+	install -d ${D}${bindir}
+	install -m 0755 erro-app ${D}${bindir}
+	# install systemv init scripts
+	install -d ${D}${sysconfdir}/init.d
+	install -c -m 755 error-app.sh ${D}${sysconfdir}/init.d/error-app.sh
+	# install systemd init scripts
+	install -d ${D}${systemd_unitdir}/system
+	install -m 0644 error-app.service ${D}${systemd_unitdir}/system
+}
+
+INITSCRIPT_NAME_${PN} = "error-app.sh"
+INITSCRIPT_PARAMS_${PN} = "defaults"
+#INITSCRIPT_PARAMS_${PN} = "start 99 5 2 . stop 20 0 1 6 ."
+SYSTEMD_SERVICE_${PN} = "error-app.service"
+```
+
+we have also to implement the two files `error-app.sh` and `error-app.service` scripts and put in file `meta-sw/recipes-sw/error-app/files/src`
+
+**error-app.sh**
+
+```sh
+#! /bin/sh
+case "$1" in
+      start)
+           echo "Starting readapp........."
+           start-stop-daemon -S -n readapp -a /usr/bin/erro-app &
+           ;;
+     stop)
+           echo "Stopping readapp........."
+           start-stop-daemon -K -n erro-app
+           ;;
+     *)
+           echo "Usage: $0 {start|stop}"
+           exit 1
+esac
+exit 0
+```
+
+**error-app.service**
+
+```sh
+[Unit]
+Description=erro-app server
+[Service]
+Type=simple
+ExecStart=/usr/bin/erro-app
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+
+you can insert multiple init scripts using `INITSCRIPT_PACKAGES` like the following Example
+
+```sh
+INITSCRIPT_PACKAGES = "${PN}-httpd ${PN}-ftpd"
+INITSCRIPT_NAME_${PN}-httpd = "httpd.sh"
+INITSCRIPT_NAME_${PN}-ftpd = "ftpd.sh"
+INITSCRIPT_PARAMS_${PN}-httpd = "defaults"
+INITSCRIPT_PARAMS_${PN}-ftpd = "start 99 5 2 . stop 20 0 1 6 ."
+#look `busybox.inc`
+```
+
+ 
 
 # Creating custom image
 
