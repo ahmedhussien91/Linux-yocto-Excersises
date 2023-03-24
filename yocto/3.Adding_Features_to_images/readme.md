@@ -77,8 +77,8 @@ we can start adding our recipes to this layer
 Refer to [This link](https://github.com/ahmedhussien91/ycoto-excersise.git) for code of this layer, to start working with this layer you need to 
 
 ```sh
-git clone https://github.com/ahmedhussien91/ycoto-excersise.git
-cd yocto-excersise
+git clone https://github.com/ahmedhussien91/ycoto-excersise.git layers
+cd layers
 ./clone_layers
 ./bitbake_bb_rpi # to build the Excersise for both raspberrypi & beaglebone
 ```
@@ -153,15 +153,16 @@ HOMEPAGE = "https://github.com/ahmedhussien91/posix-app"
 # package category (e.g. console/utils), check http://www.embeddedlinux.org.cn/OEManual/section_variable.html
 SECTION = "console" 
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+
+#LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 # LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 # use if the license if on git TODO  
-# LIC_FILES_CHKSUM = "file://${WORKDIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302" 
+LIC_FILES_CHKSUM = "file://${WORKDIR}/git/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302" 
 
 # point to the source on git
 SRC_URI = "git://github.com/ahmedhussien91/posix-app.git;protcol=https;branch=main"
 # git commit hash
-SRCREV = "693c11bd4844e85f795bd4b960f842a7bdf8a75d"
+SRCREV = "cf5efd3ffc709cc37b1db5abc44144329b0334c9"
 
 # this where the code will be downloaded when it's fetched from git
 S = "${WORKDIR}/git"
@@ -296,7 +297,7 @@ SRC_URI = "file://src"
 S="${WORKDIR}/src"
 LDFLAGS=""
 DEPENDS = "get-num"
-RDEPENDS_${PN} = "get-num"
+# RDEPENDS_${PN} = "get-num"
 
 do_compile(){
 	$CC -c -g -Wall error_functions.c -I${STAGING_INCDIR}
@@ -355,7 +356,7 @@ SRC_URI ="file://src"
 DEPENDS = "error-functions"
 S="${WORKDIR}/src"
 
-inherit  update-rc.d systemd
+inherit update-rc.d systemd
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
@@ -433,7 +434,7 @@ INITSCRIPT_PARAMS_${PN}-ftpd = "start 99 5 2 . stop 20 0 1 6 ."
 
 # Creating custom image
 
-We need to create our custom image to include our applications by default instead of putting everything in the `local.conf` file to do so inside `meta-sw/` we:
+We need to create our custom image to include our applications to do so inside `meta-sw/` we:
 
 ```sh
 mkdir -p recipes-core/images
@@ -441,44 +442,78 @@ cd recipes-core/images
 cp ../../../poky/meta/recipes-core/images/core-image-base.bb custom-image.inc
 ```
 
-we will use the `core-image-base.bb` as base for our images, then we impelement the following two custom images:
+we will use the `core-image-base.bb` as base for our images, then we implement the following custom image:
 
-**custom-image-sysv.bb**
+**custom-image.bb**
 
 ```sh
-include custom-image.inc
+SUMMARY = "A console-only image that fully supports the target device \
+hardware."
 
-IMAGE_INSTALL_append = " openssh \
-						 error-gcc \
-						 read-app \
-						 "
+# add image features
+IMAGE_FEATURES += "splash"
+
+inherit core-image
+
+IMAGE_INSTALL_append = "openssh \
+			error-gcc \
+			readapp \
+			"
+# instruct to produce filesystem in `.tar` format
 IMAGE_FSTYPES_append = " tar"
 
+# you can specify package
+# IMAGE_INSTALL_append = "error-gcc-dev"
 # PREFERRED_VERSION_error-gcc = "1.0"
 ```
 
-**custom-image-sysd.bb**
+
+
+# Packages split
+
+▶ Packages can be split.
+▶ Useful when a single remote repository provides multiple binaries or libraries.
+▶ The list of packages to provide is defined by the **PACKAGES** variable.
+▶ The **FILES** variable is often used to split the output into packages. 
+
+[PACKAGES](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-PACKAGES) is a local variable for each recipe that carry the packages to be created
 
 ```sh
-include custom-image.inc
+# Default value
+PACKAGES = "${PN}-dbg ${PN}-staticdev ${PN}-dev ${PN}-doc ${PN}-locale ${PACKAGE_BEFORE_PN} ${PN}"
+```
 
-IMAGE_INSTALL_append = " openssh \
-						 error-gcc \
-						 read-app \
-						 "
-IMAGE_FSTYPES_append = " tar"
+ during packaging each package use the variable [FILES](https://docs.yoctoproject.org/3.2.3/ref-manual/ref-variables.html#term-FILES) to fill the package
 
-# PREFERRED_VERSION_error-gcc = "1.0"
+```sh
+#Defualt value, see `meta/conf/bitbake.conf`
+FILES_${PN}-dev = \
+"${includedir} ${FILES_SOLIBSDEV} ${libdir}/*.la \
+${libdir}/*.o ${libdir}/pkgconfig ${datadir}/pkgconfig \
+${datadir}/aclocal ${base_libdir}/*.o \
+${libdir}/${BPN}/*.la ${base_libdir}/*.la"
+FILES_${PN}-dbg = "/usr/lib/debug /usr/src/debug"
+```
 
-# add systemd support
-# add systemd to distro features
-DISTRO_FEATURES_append = " systemd"   
-# remove the systemv from distro features
-DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit" 
-# assign init_manager as systemd
-VIRTUAL-RUNTIME_init_manager = "systemd" 
-# assign initscripts to systemd-compact-units, allow us to use `systemctl`
-VIRTUAL-RUNTIME_initscripts = "systemd-compat-units" 
+see [here](http://www.embeddedlinux.org.cn/OEManual/recipes_packages.html)
+
+Example **kexe-tools_2.0.20.bb**
+
+```sh
+...
+# you can extend it to add you values
+PACKAGES =+ "kexec kdump vmcore-dmesg"
+
+ALLOW_EMPTY_${PN} = "1"
+RRECOMMENDS_${PN} = "kexec kdump vmcore-dmesg"
+
+FILES_kexec = "${sbindir}/kexec"
+FILES_kdump = "${sbindir}/kdump \
+               ${sysconfdir}/sysconfig/kdump.conf \
+               ${sysconfdir}/init.d/kdump \
+               ${libexecdir}/kdump-helper \
+               ${systemd_unitdir}/system/kdump.service \
+...
 ```
 
 
