@@ -467,7 +467,37 @@ IMAGE_FSTYPES_append = " tar"
 # PREFERRED_VERSION_error-gcc = "1.0"
 ```
 
+# Updating Distro Configuration for systemd
 
+To implement your own distribution check [here](https://docs.yoctoproject.org/dev/dev-manual/custom-distribution.html).
+
+we need to add a new disrtibution that is based on `poky.conf` and include the `systemd` as an **init-manager**
+
+in `meta-sw/conf/distro/` create `sysd-poky.conf` 
+
+```sh
+require conf/distro/poky.conf
+
+# Use systemd for system initialization
+DISTRO_FEATURES_append = " systemd"
+DISTRO_FEATURES_BACKFILL_CONSIDERED_append = " sysvinit"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
+VIRTUAL-RUNTIME_login_manager = "shadow-base"
+
+DISTRO = "sysd-poky"
+DISTROOVERRIDES = "poky:sysd-poky"
+```
+
+to build this distribution change `DISTRO` variable in `local.conf`
+
+```sh
+...
+DISTRO = "sysd-poky"
+...
+```
+
+then `bitbake custom-image` again to generate new image with this distribution 
 
 # Packages split
 
