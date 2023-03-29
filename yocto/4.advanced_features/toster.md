@@ -101,13 +101,20 @@ now Toster will be up on  http://127.0.0.1:18000
 
 we can try to create our first project from there
 
-click on **create your first Toaster project to run manage builds** and start playing with Toster
+click on **create your first Toaster project to run manage builds** and start playing with Toaster
+
+check [Toaster Documentation](https://docs.yoctoproject.org/toaster-manual/setup-and-use.html#setting-up-and-using-toaster)
 
 
 
 # LINKS
 
 - Django documentation can be accessed at [https://docs.djangoproject.com/en/1.](https://docs.djangoproject.com/en/1.9/)[9](https://docs.djangoproject.com/en/1.9/)[/](https://docs.djangoproject.com/en/1.9/)
+
 - The Django management command available at toaster/manage.py is documented as part of the Django documentation at [https://docs.djangoproject.com/en/1.](https://docs.djangoproject.com/en/1.9/ref/django-admin/)[9](https://docs.djangoproject.com/en/1.9/ref/django-admin/)[/ref/django-admin/](https://docs.djangoproject.com/en/1.9/ref/django-admin/)
+
 - Docker specific documentation can be accessed at https://docs.docker.com/engine/reference/commandline/dockerd/
+
 - The Toaster docker container home page is https://github.com/crops/toaster-container
+
+  
