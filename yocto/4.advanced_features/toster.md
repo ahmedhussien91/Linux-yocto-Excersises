@@ -93,6 +93,8 @@ mkdir /opt/docker-toster
 docker run -it --rm -p 127.0.0.1:18000:8000 -v /opt/docker-toster:/workdir crops/toaster
 # on windows from `wsl` run
 # docker run -it --rm -p 127.0.0.1:18000:8000 -v /mnt/d/OneDrive/Documents/corps/docker-toster:/workdir crops/toaster
+# to access root user 
+# docker exec -it -u 0 <container id> bash
 ```
 
 now Toster will be up on  http://127.0.0.1:18000
@@ -103,7 +105,31 @@ we can try to create our first project from there
 
 click on **create your first Toaster project to run manage builds** and start playing with Toaster
 
+you can build your first image by specifying the image name in here 
+
+
+
 check [Toaster Documentation](https://docs.yoctoproject.org/toaster-manual/setup-and-use.html#setting-up-and-using-toaster)
+
+# work with yocto on Docker
+
+```sh
+docker run -it -p 127.0.0.1:18001:8000 -name poky_cnt -v G:/yocto:/yocto crops/poky # will create the container from image
+# to get root access 
+docker exec -it -u 0 poky_cnt bash
+# to start container 
+docker container start poky_cnt
+# to attach container 
+docker container attach poky_cnt
+```
+
+## working inside container
+
+```sh
+git 
+```
+
+
 
 
 
