@@ -21,7 +21,7 @@ then
 
 ```sh
 vim init/main.c
-# add printk("Hellooooooooooooooooo from kernelllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"); in function start_kernel()
+# add pr_info("Hellooooooooooooooooo from kernelllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"); in function start_kernel()
 ```
 
 close this shell the compile using 
@@ -50,7 +50,7 @@ we will now in folder `~/Documents/yocto_organized/layers/meta-sw/recipes-kernel
 ```sh
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://0001-add-print.patch \
+SRC_URI += "file://0001-add-print-in-kernel.patch \
 			"
 ```
 

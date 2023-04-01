@@ -29,10 +29,6 @@ output is in `$BUILDDIR/tmp/deploy/sdk`
 
 
 
-
-
-
-
 # using this SDK to build the application
 
 ### Steps to build application:

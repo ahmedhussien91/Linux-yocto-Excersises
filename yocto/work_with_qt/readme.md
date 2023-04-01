@@ -1,4 +1,17 @@
-# working with qt
+# building Qt application 
+
+### perquisites 
+
+```sh
+sudo apt-get install gawk curl git-core git-lfs diffstat unzip texinfo build-essential \
+chrpath libsdl1.2-dev xterm gperf bison gcc-multilib g++-multilib repo
+```
+
+
+
+
+
+# working with qt6
 
 you can build your custom linux image to use qt using yocto
 

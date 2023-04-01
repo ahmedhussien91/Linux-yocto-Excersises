@@ -588,6 +588,8 @@ setenv bootargs_busybox "setenv bootargs console=ttyS0,115200 root=/dev/nfs ip=1
 setenv bootargs_sysv "setenv bootargs console=ttyS0,115200 root=/dev/nfs ip=192.168.7.100:::::eth0 nfsroot=192.168.7.1:/home/ahmed/bb_sysv,nfsvers=3,tcp rw init=/sbin/init"
 setenv bootargs_sysd "setenv bootargs console=ttyS0,115200 root=/dev/nfs ip=192.168.7.100:::::eth0 nfsroot=192.168.7.1:/home/ahmed/bb_sysd,nfsvers=3,tcp rw init=/sbin/init"
 saveenv
+# setenv bootargs_custom_img "setenv bootargs console=ttyS0,115200 root=/dev/nfs ip=192.168.7.100:::::eth0 nfsroot=192.168.7.1:/home/ahmed/custom_img,nfsvers=3,tcp rw init=/sbin/init"
+# saveenv
 ```
 
  
@@ -599,6 +601,8 @@ setenv bootcmd_busybox 'run bootargs_busybox; tftp 0x80200000 zImage; tftp 0x820
 setenv bootcmd_sysv 'run bootargs_sysv; tftp 0x80200000 zImage_sysv; tftp 0x82000000 am335x-boneblack_sys.dtb; bootz 0x80200000 - 0x82000000'
 setenv bootcmd_sysd 'run bootargs_sysd; tftp 0x80200000 zImage_sysd; tftp 0x82000000 am335x-boneblack_sys.dtb; bootz 0x80200000 - 0x82000000'
 saveenv
+# setenv bootcmd_custom_img 'run bootargs_custom_img; tftp 0x80200000 zImage_custom-image; tftp 0x82000000 am335x-boneblack_sys.dtb; bootz 0x80200000 - 0x82000000'
+# saveenv
 ```
 
 
