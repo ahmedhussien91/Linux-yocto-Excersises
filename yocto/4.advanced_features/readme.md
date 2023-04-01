@@ -55,3 +55,6 @@ SRC_URI += "file://0001-add-print-in-kernel.patch \
 ```
 
 then just build and run the image and you should see **Hellooooooooooooooooo from kernelllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll** in startup messages of the kernel
+
+**Note:** you may need to add ` loglevel=6 ` in **Linux command line parameters** while booting to see this print
+
