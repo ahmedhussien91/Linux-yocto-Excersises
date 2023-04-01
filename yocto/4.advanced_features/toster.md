@@ -23,17 +23,18 @@ It allows you to:
 
 ## Install perquisites
 
+from inside `poky/`
+
 ```sh
 sudo apt-get install python3-pip
-pip3 install --user -r /opt/yocto/poky/bitbake/toaster-requirements.txt
+pip3 install --user -r ./bitbake/toaster-requirements.txt
+# add sqlformat and django-admin to path
+PATH=$PATH:/home/ahmed/.local/bin
 ```
-
-
 
 ## Start Toster
 
 ```sh
-cd /opt/yocto/poky
 source oe-init-build-env
 source toaster start 
 ```
@@ -131,7 +132,30 @@ git
 
 
 
+# TOASTER Exercise 
 
+```sh
+sudo apt-get install python3-pip
+pip3 install --user -r ./bitbake/toaster-requirements.txt
+# add sqlformat and django-admin to path
+PATH=$PATH:/home/ahmed/.local/bin
+source oe-init-build-env
+source toaster start 
+```
+
+Then open browse with http://127.0.0.1:8000
+
+![image-20230329101104757](./assets/image-20230329101104757.png)
+
+click on **create your first Toaster project to run manage builds**
+
+![image-20230401052935648](./assets/image-20230401052935648.png)
+
+let's build `core-image-minimal` image recipe
+
+![image-20230401053111930](./assets/image-20230401053111930.png)
+
+click on Build
 
 # LINKS
 
