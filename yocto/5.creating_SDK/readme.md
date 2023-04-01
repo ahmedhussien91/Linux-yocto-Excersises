@@ -6,10 +6,34 @@ Two different SDKs can be generated:
   - A toolchain.
   - Common tools.
   - A collection of basic libraries.
--  An image-based SDK, including:
+
+- An image-based SDK, including:
   - The generic SDK.
   - The sysroot matching the target root filesystem.
   - Its toolchain is self-contained (linked to an SDK embedded libc).
+
+- An image-based extensible SDK include but it's content can be minimized using variables:
+
+  - A toolchain.
+
+  - Common tools.
+
+  - A collection of basic libraries.
+
+  - The sysroot matching the target root filesystem.
+
+  - devtool support
+
+  - Example of Variables used
+
+    ```sh
+    SDK_EXT_TYPE = "minimal" # full or minimal(don't contain toolchain but with variables)
+    SDK_INCLUDE_TOOLCHAIN = "1" #  the full SDK will by default include the toolchain, and the minimal SDK will not, unless configured to do so.
+    SDK_INCLUDE_PKGDATA = "1" #  includes the package data for all world target recipes in the extensible SDK, this increase build time, but allow devtool to access all packages
+    ```
+
+    
+
 
 # steps to create generic SDK 
 
@@ -27,7 +51,13 @@ bitbake -c populate_sdk custom-image
 
 output is in `$BUILDDIR/tmp/deploy/sdk`
 
+# Steps to Create extensible SDK
 
+```sh
+bitbake -c populate_sdk_ext custom-image
+```
+
+output is in `$BUILDDIR/tmp/deploy/sdk`
 
 # using this SDK to build the application
 
@@ -63,4 +93,8 @@ file build/read-app/readapp
 ```
 
 > build/read-app/readapp: ELF 32-bit LSB pie executable, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-armhf.so.3, BuildID[sha1]=53aaed094c24077819122ea8c0b4806cd0b27874, for GNU/Linux 3.2.0, with debug_info, not stripped
+
+
+
+
 
