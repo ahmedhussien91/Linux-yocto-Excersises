@@ -4,21 +4,17 @@ This Document describe the steps you need to do to complete integration of [vsom
 
 We will describe the following steps in this document:
 
-1. we will start by creating an image by following steps in [1.building_Raspberrypi_image](https://github.com/ahmedhussien91/Linux-yocto-Excersises/blob/main/yocto/1.building_Raspberrypi_image/readme.md) --> [1](#1. build raspberrypi image)
-
+1. we will start by creating an image by following steps in [1.building_Raspberrypi_image](https://github.com/ahmedhussien91/Linux-yocto-Excersises/blob/main/yocto/1.building_Raspberrypi_image/readme.md)  but for MACHINE="**beaglebone-yocto**"--> [1](#1. build raspberrypi image)
 2. Implement a custom layer (**meta-custom**) to include our applications --> [2](#2. custom layer)
-
 3. write a recipe (**vsomeip_1.0.bb**) for compiling and integrating [vsomeip](https://github.com/COVESA/vsomeip) in our custom layer --> [3](#3. implement vsomeip recipe)
-
 4. write our custom image (**vsomeip-image.bb**) and include components included in (**core-image-base**) + "openssh" + "vsomeip" --> [4]()
+5. bitbake new **vsomeip-image.bb** image and generate SDK.
+6. build **[applications](https://github.com/ahmedhussien91/Linux-yocto-Excersises/tree/main/yocto/vsomeip/applications_code)** of vsomeip using SDK and test on **qemu** of **beaglebone-yocto**.
+7. Implement recipe for each application **vsomeip-server_1.0.bb** & **vsomeip-client_1.0.bb**, make sure that the application start automatically using **systemV** or **systemd**.
+8. Include applications in   **vsomeip-image.bb** and rebuild.
+9. start new image with **vsomeip** applications and see them running in the background using `ps -aux` command
 
-5. bitbake new **vsomeip-image.bb** image and generate SDK
-
-6. build applications of vsomeip using SDK
-
-7. start new image and transfer the vsomeip applications to target using (**SCP**)
-
-8. run applications on target **ssh** instances for each application 
+<p style="color:red;">NOTE: to be submitted a  short video with the steps</p>
 
 
 
@@ -27,11 +23,9 @@ We will describe the following steps in this document:
 
 [up](#vsomeip project)
 
-the output of this step is two folders and raspberrypi4 image:
+the output of this step is **poky** folder and **beaglebone-yocto** image
 
-- poky
-- meta-raspberrypi
-- core-image-base image
+
 
 ## 2. custom layer
 
@@ -154,7 +148,7 @@ then inside the SDK we will source the environment to setup the environment for 
 . /opt/poky/3.1.19/environment-setup-cortexa7t2hf-neon-vfpv4-poky-linux-gnueabi
 ```
 
-## 6. build our application
+## 6. build **applications** of vsomeip using SDK and test on **qemu** of **beaglebone-yocto**.
 
 We have our applications in the folder beside this readme.md file in [applications_code/](https://github.com/ahmedhussien91/Linux-yocto-Excersises/tree/main/yocto/vsomeip/applications_code)
 
@@ -172,8 +166,8 @@ make
 
 this will output two binaries in **build/** 
 
-- client-app
-- server-app
+- **client-app**
+- **server-app**
 
 you can check that this application is built for our target using **file**
 
@@ -183,35 +177,9 @@ file client-app
 
 > client-app: ELF 32-bit LSB pie executable, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-armhf.so.3, BuildID[sha1]=206c3659242406fe8fdb8e26e123b5a462cc643f, for GNU/Linux 3.2.0, with debug_info, not stripped
 
+### starting machine
 
-
-## 7. start the image and application
-
-## starting the image
-
-### raspberrypi
-
-you can flash the image on the raspberrypi machine you have build the application for it using **dd** command 
-
-```sh
-sudo dd if=tmp/deploy/images/raspberrypi2/vsomeip-image-raspberrypi2.rpi-sdimg of=/dev/sdb bs=1M
-```
-
-### beaglebone qemu
-
-to Execute on qemu easily we can change the MACHINE in **local.conf** file to 
-
-```sh
-MACHINE = "beaglebone-yocto"
-```
-
-then bibake the image again
-
-```sh
-bitbake vsomeip-image # create the image
-```
-
-then to start **qemu** for this machine run this command
+to start **qemu** for this machine run this command
 
 ```sh
 runqemu nographic
@@ -224,7 +192,7 @@ runqemu nographic
 >
 > ...
 
-to know our ip
+to know our PC ip on another PC terminal
 
 ```sh
 ifconfig
@@ -256,7 +224,9 @@ ping 192.168.7.2
 > PING 192.168.7.1 (192.168.7.1): 56 data bytes
 > ping: sendto: Network is unreachable
 
-we need to configure the **ip** of our target using 
+
+
+we might need to configure the **ip** of our target using 
 
 ```sh
 ifconfig eth0 192.168.7.2
@@ -275,9 +245,7 @@ ping 192.168.7.1
 >
 > ...
 
-
-
-## transferring the application
+### transferring the application to qemu machine
 
 we need to transfer the compiled applications **client-app** and **server-app** to the target for this we need to use **SCP** (secured copy)
 
@@ -302,7 +270,7 @@ scp server-app root@192.168.7.2:/usr/bin
 
 > server-app                                                                                                                                                               100%  122KB   3.5MB/s   00:00    
 
-## 8. run application on target 
+### run application on target 
 
 from terminal in your machine we should start an **ssh** connection with target and execute the **server-app** using the following command
 
@@ -366,3 +334,21 @@ client-app
 
 Note Service is available
 
+
+
+## 7 & 8 & 9
+
+you should repeat the steps **3, 4, 5** without the SDK generation step but for the recipes **vsomeip-server_1.0.bb** & **vsomeip-client_1.0.bb** which implement the applications
+
+Implement the recipes to fetch the application **locally** without any git repos, in other words: 
+
+- download the application by downloading this [repo](https://github.com/ahmedhussien91/Linux-yocto-Excersises/tree/main/yocto/vsomeip/applications_code) 
+
+- copy code to your **meta-custom** layer
+- implement the recipe for this local code
+- include it in the **vsomeip-image.bb**
+- `bitbake vsomeip-image.bb`
+- `runqemu nographic` to start image
+- `ps -aux` to see the applications running 
+
+ 
