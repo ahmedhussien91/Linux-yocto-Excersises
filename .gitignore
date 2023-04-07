@@ -56,3 +56,4 @@ linux/4-linux_cross_compilation/sd.img
 .vscode/settings.json
 yocto/vsomeip/applications_code/build/*
 yocto/work_with_qt/build/
+beaglebone/

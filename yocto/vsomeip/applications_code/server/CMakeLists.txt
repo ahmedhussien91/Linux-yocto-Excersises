@@ -13,7 +13,3 @@ include_directories (
 # server-app.cpp    
 add_executable(server-app server/server-app.cpp)
 target_link_libraries(server-app vsomeip3 ${Boost_LIBRARIES})
-
-# client-app.cpp    
-add_executable(client-app client/client-app.cpp)
-target_link_libraries(client-app vsomeip3 ${Boost_LIBRARIES})

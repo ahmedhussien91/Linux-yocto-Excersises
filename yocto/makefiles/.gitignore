@@ -5,3 +5,4 @@ get_num.o
 main.d
 main.o
 test
+build/
