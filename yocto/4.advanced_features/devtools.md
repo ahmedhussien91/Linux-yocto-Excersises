@@ -87,7 +87,7 @@ it will add this line to the recipe `file://0001-fix-compilation-error.patch \`
 to **deploy** to the target if you have **SSH server**
 
 ```sh
-devtool deploy-target vsomeip root@192.168.7.1:/bin
+devtool deploy-target vsomeip root@192.168.7.100:/bin
 ```
 
 
@@ -103,3 +103,12 @@ devtool finish vsomeip meta-sw
 > INFO: Updating patch 0001-fix-compilation-error.patch
 > INFO: Moving recipe file to /home/ahmed/Documents/yocto_organized/layers/meta-sw/recipes-vsomeip/vsomeip
 > INFO: Leaving source tree /home/ahmed/Documents/yocto_organized/layers/bb-build/workspace/sources/vsomeip as-is; if you no longer need it then please delete it manually
+
+
+
+to clean up devtool changes 
+
+```sh 
+devtool reset
+```
+

@@ -2,17 +2,17 @@
 
 Two different SDKs can be generated:
 
-- A generic SDK, including:
+- A **generic SDK**, including:
   - A toolchain.
   - Common tools.
   - A collection of basic libraries.
 
-- An image-based SDK, including:
+- An **image-based SDK**, including:
   - The generic SDK.
   - The sysroot matching the target root filesystem.
   - Its toolchain is self-contained (linked to an SDK embedded libc).
 
-- An image-based extensible SDK include but it's content can be minimized using variables:
+- An image-based **extensible SDK** include but it's content can be minimized using variables:
 
   - A toolchain.
 
@@ -22,7 +22,7 @@ Two different SDKs can be generated:
 
   - The sysroot matching the target root filesystem.
 
-  - devtool support
+  - **devtool** support
 
   - Example of Variables used
 
@@ -33,6 +33,7 @@ Two different SDKs can be generated:
     ```
 
     
+  
 
 
 # steps to create generic SDK 
@@ -51,6 +52,31 @@ bitbake -c populate_sdk custom-image
 
 output is in `$BUILDDIR/tmp/deploy/sdk`
 
+to setup this SDK on machine we should run this script
+
+```sh
+./sysd-poky-glibc-x86_64-custom-image-armv7at2hf-neon-beaglebone-toolchain-3.1.24.sh
+```
+
+>  Poky (Yocto Project Reference Distro) SDK installer version 3.1.24
+>
+> Enter target directory for SDK (default: /opt/sysd-poky/3.1.24): 
+> You are about to install the SDK to "/opt/sysd-poky/3.1.24". Proceed [Y/n]? y
+> [sudo] password for ahmed: 
+> Extracting SDK.........................................................................................done
+> Setting it up...done
+> SDK has been successfully set up and is ready to be used.
+> Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
+>  $ . /opt/sysd-poky/3.1.24/environment-setup-armv7at2hf-neon-poky-linux-gnueabi
+
+to use we source this script 
+
+```sh
+. /opt/sysd-poky/3.1.24/environment-setup-armv7at2hf-neon-poky-linux-gnueabi
+```
+
+
+
 # Steps to Create extensible SDK
 
 ```sh
@@ -59,11 +85,43 @@ bitbake -c populate_sdk_ext custom-image
 
 output is in `$BUILDDIR/tmp/deploy/sdk`
 
+to setup this SDK on machine we should run this script
+
+```sh
+./sysd-poky-glibc-x86_64-custom-image-armv7at2hf-neon-beaglebone-toolchain-ext-3.1.23.sh
+```
+
+> Poky (Yocto Project Reference Distro) Extensible SDK installer version 3.1.23
+>
+> Enter target directory for SDK (default: ~/sysd-poky_sdk): 
+> You are about to install the SDK to "/home/ahmed/sysd-poky_sdk". Proceed [Y/n]? y
+> Extracting SDK......................................................done
+> Setting it up...
+> Extracting buildtools...
+> Preparing build system...
+> Parsing recipes: 100% |######################################################################################################| Time: 0:01:47
+> Initialising tasks: 100% |###################################################################################################| Time: 0:00:05
+> Checking sstate mirror object availability: 100% |###########################################################################| Time: 0:00:01
+> Loading cache: 100% |########################################################################################################| Time: 0:00:01
+> Initialising tasks: 100% |###################################################################################################| Time: 0:00:01
+> done
+> SDK has been successfully set up and is ready to be used.
+> Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
+>  $ . /home/ahmed/sysd-poky_sdk/environment-setup-armv7at2hf-neon-poky-linux-gnueabi
+
+to use we source this script 
+
+```sh
+. /home/ahmed/sysd-poky_sdk/environment-setup-armv7at2hf-neon-poky-linux-gnueabi
+```
+
+
+
 # using this SDK to build the application
 
 ### Steps to build application:
 
-#### install SDK
+#### Install SDK
 
 Ex. for **meta-toolchain**
 
