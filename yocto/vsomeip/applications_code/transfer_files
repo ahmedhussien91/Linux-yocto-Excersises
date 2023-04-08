@@ -1,0 +1,2 @@
+scp client/build/client-app server/build/server-app run.sh vsomeip.json root@192.168.7.100:~
+
