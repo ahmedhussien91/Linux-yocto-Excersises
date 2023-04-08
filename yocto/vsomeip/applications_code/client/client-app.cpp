@@ -32,7 +32,7 @@ void run() {
   }
   its_payload->set_data(its_payload_data);
   request->set_payload(its_payload);
-  app->send(request, true);
+  app->send(request);
 }
 
 void on_message(const std::shared_ptr<vsomeip::message> &_response) {
