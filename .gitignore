@@ -57,3 +57,5 @@ linux/4-linux_cross_compilation/sd.img
 yocto/vsomeip/applications_code/build/*
 yocto/work_with_qt/build/
 beaglebone/
+yocto/vsomeip/applications_code/client/build
+yocto/vsomeip/applications_code/server/build
