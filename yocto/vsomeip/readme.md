@@ -12,7 +12,7 @@ We will describe the following steps in this document:
 6. build **[applications](https://github.com/ahmedhussien91/Linux-yocto-Excersises/tree/main/yocto/vsomeip/applications_code)** of vsomeip using SDK and test on **qemu** of **beaglebone-yocto**.
 7. Implement recipe for each application **vsomeip-server_1.0.bb** & **vsomeip-client_1.0.bb**, make sure that the application start automatically using **systemV** or **systemd**.
 8. Include applications in   **vsomeip-image.bb** and rebuild.
-9. start new image with **vsomeip** applications and see them running in the background using `ps -aux` command
+9. start new image with **vsomeip** applications and see them running in the background using `ps ` command
 
 <p style="color:red;">NOTE: to be submitted a  short video with the steps</p>
 
