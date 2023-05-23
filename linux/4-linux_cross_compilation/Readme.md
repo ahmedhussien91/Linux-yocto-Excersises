@@ -27,7 +27,7 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
 - in arch/arm/configs -> vexpress_defconfig
 
   ```sh
-      make vexpress_defconfig
+  make vexpress_defconfig
   ```
 
 - to visualize configurations 

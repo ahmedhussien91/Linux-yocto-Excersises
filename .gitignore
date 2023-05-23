@@ -59,3 +59,5 @@ yocto/work_with_qt/build/
 beaglebone/
 yocto/vsomeip/applications_code/client/build
 yocto/vsomeip/applications_code/server/build
+linux/bb/
+linux/qemu/
