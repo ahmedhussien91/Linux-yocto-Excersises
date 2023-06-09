@@ -12,7 +12,7 @@ download_dep () {
     make
     cd  ..
 
-    git clone git@github.com:u-boot/u-boot.git
+    git clone https://github.com/u-boot/u-boot.git
     cd u-boot/
     git checkout v2022.07
     cd ..

@@ -1,6 +1,6 @@
 #!/bin/bash
 # versions
-crosstool_ver="crosstool-ng-1.22.0"
+crosstool_ver="crosstool-ng-1.25.0"
 linux_ver="v5.19.6"
 busybox_ver="master"
 uboot_ver="v2022.07"
@@ -21,7 +21,7 @@ download_dep () {
     make
     cd ..
 
-    git clone git@github.com:u-boot/u-boot.git
+    git clone https://github.com/u-boot/u-boot.git
     cd u-boot/
     git checkout $uboot_ver
     cd ..
