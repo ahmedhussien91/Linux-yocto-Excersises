@@ -28,5 +28,5 @@ clean () {
     rm -fr qemu 
 }
 
-clean
+%1
 download_dep 
