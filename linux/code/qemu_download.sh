@@ -28,5 +28,7 @@ clean () {
     rm -fr qemu 
 }
 
-%1
+if [ "$1" = "clean" ]; then
+    clean
+fi
 download_dep 
