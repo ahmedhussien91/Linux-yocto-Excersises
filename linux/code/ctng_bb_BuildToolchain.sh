@@ -1,3 +1,4 @@
+#!/bin/bash
 CTNG_PATH="./bb/crosstool-ng/"
 CURRENT_PATH="$PWD"
 

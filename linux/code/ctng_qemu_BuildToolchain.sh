@@ -1,3 +1,4 @@
+#!/bin/bash
 CTNG_PATH="./qemu/crosstool-ng/"
 CURRENT_PATH="$PWD"
 
