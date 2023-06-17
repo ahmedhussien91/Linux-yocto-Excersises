@@ -4,15 +4,15 @@ crosstool_ver="crosstool-ng-1.25.0"
 linux_ver="v5.19.6"
 busybox_ver="master"
 uboot_ver="v2022.07"
+TARGET=$1
 
-
-sudo apt install build-essential git autoconf bison flex texinfo help2man gawk \
-libtool-bin libncurses5-dev unzip libssl-dev libgmp3-dev libmpc-dev nfs-kernel-server tftpd-hpa
+sudo apt install build-essential git autoconf bison flex texinfo help2man gawk qemu-system-arm \
+libtool-bin libncurses5-dev unzip libssl-dev libgmp3-dev libmpc-dev nfs-kernel-server tftpd-hpa 
 
 
 download_dep () {
-    mkdir bb
-    cd bb
+    mkdir $TARGET
+    cd $TARGET
     git clone https://github.com/crosstool-ng/crosstool-ng
     cd crosstool-ng/
     git checkout $crosstool_ver
@@ -42,7 +42,19 @@ clean () {
     rm -fr bb 
 }
 
-if [ "$1" = "clean" ]; then
-    clean
+
+if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
+    # Do something if the argument is equal to "foo" or "bar"
+    echo "The TARGET is equal to $TARGET"
+    if [ "$2" = "clean" ]; then
+        clean
+    fi
+    download_dep
+else
+  # Do something if the argument is not equal to "foo" or "bar"
+  echo "The usage:
+            > ./download_dep <TARGET> [clean]
+            Target: bb or qemu
+            Ex. > ./download_dep bb clean"
 fi
-download_dep
+
