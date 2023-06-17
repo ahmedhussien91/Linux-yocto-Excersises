@@ -7,7 +7,7 @@ uboot_ver="v2022.07"
 TARGET=$1
 
 sudo apt install build-essential git autoconf bison flex texinfo help2man gawk qemu-system-arm \
-libtool-bin libncurses5-dev unzip libssl-dev libgmp3-dev libmpc-dev nfs-kernel-server tftpd-hpa 
+libtool-bin libncurses5-dev unzip libssl-dev libgmp3-dev libmpc-dev nfs-kernel-server tftpd-hpa -y
 
 
 download_dep () {
