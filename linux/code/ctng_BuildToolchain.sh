@@ -9,6 +9,7 @@ if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
     if [ "$1" == "qemu" ]; then      
         cd $CTNG_PATH
         ./ct-ng arm-cortexa9_neon-linux-gnueabihf
+        cp $CURRENT_PATH/qemu_arm-cortex_a8-linux-gnueabi .config
         ./ct-ng source
         ./ct-ng build
     #beaglebone ctng build
