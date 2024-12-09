@@ -148,7 +148,13 @@ You will find the following subdirectories in **sysroot**:
 
 - Download [arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz](https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz)
 
+- Extract folder in a specific `<toolchain_path>`
 
+- To use the toolchain you need to add the **bin** directory to the `PATH` variable of your current shell
+
+  - use this command to do so `export PATH=<toolchain_path>/bin:$PATH`
+
+  
 
 ## Cross Compile using toolchain built (folder 1/)
 
