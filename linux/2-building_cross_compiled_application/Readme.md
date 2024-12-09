@@ -134,6 +134,22 @@ You will find the following subdirectories in **sysroot**:
 
 
 
+## getting pre-compiled toolchain
+
+- go to [arm-gnu-toolchain-downloads](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
+
+- navigate or scroll down to `x86_64 Linux hosted cross toolchains`
+
+- under `AArch32 GNU/Linux target with hard float (arm-none-linux-gnueabihf)`
+
+  - we are searching for **[cortexA9](https://developer.arm.com/Processors/Cortex-A9)** target (Armv7-A 32-bit)
+
+    ![image-20241209114915948](./assets/image-20241209114915948.png)
+
+- Download [arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz](https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz)
+
+
+
 ## Cross Compile using toolchain built (folder 1/)
 
 - try compiling file with `-v` option
