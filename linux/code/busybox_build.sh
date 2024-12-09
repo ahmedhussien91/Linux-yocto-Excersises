@@ -8,7 +8,7 @@ if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
     #qemu busybox build
     if [ "$1" == "qemu" ]; then      
         cd $BUSYBOX_PATH
-        source $CURRENT_PATH/qemu-crossCompiler-setenv.sh
+        source $CURRENT_PATH/setenv_crossCompiler.sh $1
         make 
         make install # output is by default placed in _install/
 
@@ -16,7 +16,7 @@ if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
     #beaglebone busybox build
     else
         cd $BUSYBOX_PATH
-        source $CURRENT_PATH/beaglebone-crossCompiler-setenv.sh
+        source $CURRENT_PATH/setenv_crossCompiler.sh $1
         make 
         make install # output is by default placed in _install/
 

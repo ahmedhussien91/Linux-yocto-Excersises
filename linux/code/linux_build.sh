@@ -8,7 +8,7 @@ if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
     #qemu linux build
     if [ "$1" == "qemu" ]; then      
         cd $LINUX_PATH
-        source $CURRENT_PATH/qemu-crossCompiler-setenv.sh
+        source $CURRENT_PATH/setenv_crossCompiler.sh $1
         make vexpress_defconfig
         make -j4 
 
@@ -16,7 +16,7 @@ if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
     #beaglebone linux build
     else
         cd $LINUX_PATH
-        source $CURRENT_PATH/beaglebone-crossCompiler-setenv.sh
+        source $CURRENT_PATH/setenv_crossCompiler.sh $1
         make mrproper #  Removes all intermediate files, including the .config file. Use this target to return the source tree to the state it was in immediately after cloning or extracting the source code.
         make multi_v7_defconfig
         make -j4 zImage

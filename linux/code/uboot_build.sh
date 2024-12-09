@@ -8,7 +8,7 @@ if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
     #qemu u-boot build
     if [ "$1" == "qemu" ]; then      
         cd $UBOOT_PATH
-        source $CURRENT_PATH/qemu-crossCompiler-setenv.sh
+        source $CURRENT_PATH/setenv_crossCompiler.sh $1
         make vexpress_ca9x4_defconfig
         cp $CURRENT_PATH/qemu_vexpress_ca9x4_defconfig .config
         make 
@@ -17,7 +17,7 @@ if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
     #beaglebone u-boot build
     else
         cd $UBOOT_PATH
-        source $CURRENT_PATH/beaglebone-crossCompiler-setenv.sh
+        source $CURRENT_PATH/setenv_crossCompiler.sh $1
         make am335x_evm_defconfig
         make
 
