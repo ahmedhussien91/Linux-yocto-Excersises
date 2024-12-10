@@ -13,7 +13,7 @@ universal boot-loader
 ### Download U-boot
 
 ```sh 
-git clone git@github.com:u-boot/u-boot.git
+git clone https://github.com/u-boot/u-boot.git
 cd u-boot/
 git checkout v2022.07
 ```
@@ -132,7 +132,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
 
   > Syncing disks.
 
-- use loop driver to emulate block devices for this image and it's partitions
+- use loop driver to emulate this file as a block device. This will enable accessing, writing and reading to and from this file(emulated block device).
 
   ```sh
   sudo losetup -f --show --partscan sd.img
@@ -168,7 +168,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
 
   ```sh
   qemu-system-arm -M vexpress-a9 -m 128M -nographic \
-  -kernel u-boot/u-boot \
+  -kernel u-boot \
   -sd sd.img
   ```
 
@@ -211,7 +211,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
 
   ```sh 
   sudo qemu-system-arm -M vexpress-a9 -m 128M -nographic \
-  -kernel u-boot/u-boot \
+  -kernel u-boot \
   -sd sd.img \
   -net tap,script=./qemu-ifup -net nic
   ```
@@ -276,7 +276,7 @@ We will now add SD-card image to the QEMU virtual machine to store the U-Boot's 
 - we can also connect using `TFTP` and get some file `file.txt` from development workstation(host), by issuing from uboot: 
 
   ```sh 
-  tftp 0x61000000 file.txt
+  tftpboot 0x61000000 file.txt
   ```
 
   > smc911x: MAC 52:54:00:12:34:56

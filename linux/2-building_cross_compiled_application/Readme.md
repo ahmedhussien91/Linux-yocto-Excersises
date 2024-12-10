@@ -154,6 +154,8 @@ You will find the following subdirectories in **sysroot**:
 
   - use this command to do so `export PATH=<toolchain_path>/bin:$PATH`
 
+- execute `make` from folder `linux/2-building_cross_compiled_application/1`
+
   
 
 ## Cross Compile using toolchain built (folder 1/)
