@@ -104,8 +104,8 @@ We need to compile for QEMU ARM Versatile Express for Cortex-A9
       **nfsroot=**: NFS server details
   
 - U-boot can directly boot the **zImage** binary, typical process is to
-  - load kernel (zImage) at address X in memory
-  - load \<board>.dtb at address Y in memory
+  - load kernel (**zImage**) at **address X** in memory
+  - load **\<board>.dtb** at **address Y** in memory
   - Start kernel with `bootz X - Y`
     - `-` indicates no **initramfs**
 
@@ -428,3 +428,4 @@ every thing should be up and working now, Congratulations you have build a Linux
 
 
 
+​	

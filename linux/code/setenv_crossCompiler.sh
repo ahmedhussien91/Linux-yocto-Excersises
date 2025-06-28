@@ -1,26 +1,32 @@
-
 #!/bin/bash
 
-if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
-    # Do something if the argument is equal to "foo" or "bar"
-    echo "The TARGET is equal to $1"
-    #qemu busybox build
-    if [ "$1" == "qemu" ]; then      
-        PATH=${HOME}/x-tools/arm-cortexa9_neon-linux-gnueabihf/bin/:$PATH
-        export CROSS_COMPILE=arm-cortexa9_neon-linux-gnueabihf-
-        export ARCH=arm
+TARGET=$1
 
-    #beaglebone busybox build
-    else
-        PATH=${HOME}/x-tools/arm-cortex_a8-linux-gnueabihf/bin/:$PATH
-        export CROSS_COMPILE=arm-cortex_a8-linux-gnueabihf-
-        export ARCH=arm
-    fi
-else
-  # Do something if the argument is not equal to "foo" or "bar"
-  echo "The usage:
-            > ./setenv_crossCompiler.sh <TARGET>
-            Target: bb or qemu
-            Ex. > ./setenv_crossCompiler.sh bb"
+if [[ -z "$TARGET" ]]; then
+    echo "Usage: $0 <TARGET>"
+    echo "Targets: bb, qemu, rpi4"
+    exit 1
 fi
+
+case "$TARGET" in
+    bb)
+        export ARCH=arm
+        export CROSS_COMPILE="$HOME/x-tools/arm-cortex_a8-linux-gnueabihf/bin/arm-cortex_a8-linux-gnueabihf-"
+        ;;
+    qemu)
+        export ARCH=arm
+        export CROSS_COMPILE="$HOME/x-tools/arm-unknown-linux-gnueabi/bin/arm-unknown-linux-gnueabi-"
+        ;;
+    rpi4)
+        export ARCH=arm64
+        export CROSS_COMPILE="$HOME/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-"
+        ;;
+    *)
+        echo "Unknown target: $TARGET"
+        exit 1
+        ;;
+esac
+
+echo "CROSS_COMPILE set to $CROSS_COMPILE"
+echo "ARCH set to $ARCH"
 

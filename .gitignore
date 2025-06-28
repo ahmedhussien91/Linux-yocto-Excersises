@@ -61,3 +61,5 @@ yocto/vsomeip/applications_code/client/build
 yocto/vsomeip/applications_code/server/build
 linux/code/bb/
 linux/code/qemu/
+linux/code/rpi4/
+linux/code/.vscode/settings.json

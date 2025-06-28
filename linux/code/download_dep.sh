@@ -1,60 +1,63 @@
 #!/bin/bash
-# versions
-crosstool_ver="crosstool-ng-1.25.0"
-linux_ver="v5.19.6"
-busybox_ver="master"
-uboot_ver="v2022.07"
+# filepath: Linux-yocto-Excersises/linux/code/download_dep.sh
+
 TARGET=$1
 
-sudo apt install build-essential git autoconf bison flex texinfo help2man gawk qemu-system-arm \
-libtool-bin libncurses5-dev unzip libssl-dev libgmp3-dev libmpc-dev nfs-kernel-server tftpd-hpa libgnutls28-dev -y
+if [[ -z "$TARGET" ]]; then
+    echo "Usage: $0 <TARGET>"
+    echo "Available targets:"
+    awk '/^\[.*\]/{gsub(/\[|\]/,""); print "  - " $0}' targets.conf
+    exit 1
+fi
 
+# Check if target exists in targets.conf
+if ! grep -q "^\[$TARGET\]" targets.conf; then
+    echo "Unknown target: $TARGET"
+    echo "Valid targets are:"
+    awk '/^\[.*\]/{gsub(/\[|\]/,""); print "  - " $0}' targets.conf
+    exit 1
+fi
 
-download_dep () {
-    mkdir $TARGET
-    cd $TARGET
+# Source target-specific variables
+source ./parse_config.sh "$TARGET"
+
+echo "Downloading dependencies for target: $TARGET"
+
+sudo apt-get update
+sudo apt-get install -y build-essential git autoconf bison flex texinfo help2man gawk qemu-system-arm \
+libtool-bin libncurses5-dev unzip libssl-dev libgmp3-dev libmpc-dev nfs-kernel-server tftpd-hpa libgnutls28-dev
+
+mkdir -p "$TARGET"
+cd "$TARGET" || exit 1
+
+if [ ! -d crosstool-ng ]; then
     git clone https://github.com/crosstool-ng/crosstool-ng
-    cd crosstool-ng/
-    git checkout $crosstool_ver
+    cd crosstool-ng/ || exit 1
+    git checkout $CROSSTOOL_VER
     ./bootstrap
     ./configure --enable-local
     make
     cd ..
+fi
 
+if [ ! -d u-boot ]; then
     git clone https://github.com/u-boot/u-boot.git
-    cd u-boot/
-    git checkout $uboot_ver
+    cd u-boot/ || exit 1
+    git checkout $UBOOT_VER
     cd ..
+fi
 
-    
+if [ ! -d linux ]; then
     git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-    cd linux
-    git checkout $linux_ver
+    cd linux || exit 1
+    git checkout $LINUX_VER
     cd ..
+fi
 
+if [ ! -d busybox ]; then
     git clone git://git.busybox.net/busybox
-    cd busybox
-    git checkout $busybox_ver
+    cd busybox || exit 1
+    git checkout $BUSYBOX_VER
     cd ..
-}
-
-clean () {
-    rm -fr bb 
-}
-
-
-if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
-    # Do something if the argument is equal to "foo" or "bar"
-    echo "The TARGET is equal to $TARGET"
-    if [ "$2" = "clean" ]; then
-        clean
-    fi
-    download_dep
-else
-  # Do something if the argument is not equal to "foo" or "bar"
-  echo "The usage:
-            > ./download_dep <TARGET> [clean]
-            Target: bb or qemu
-            Ex. > ./download_dep bb clean"
 fi
 

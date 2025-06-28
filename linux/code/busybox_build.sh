@@ -1,31 +1,28 @@
 #!/bin/bash
-BUSYBOX_PATH="./$1/busybox/"
-CURRENT_PATH="$PWD"
 
-if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
-    # Do something if the argument is equal to "foo" or "bar"
-    echo "The TARGET is equal to $1"
-    #qemu busybox build
-    if [ "$1" == "qemu" ]; then      
-        cd $BUSYBOX_PATH
-        source $CURRENT_PATH/setenv_crossCompiler.sh $1
-        make 
-        make install # output is by default placed in _install/
+TARGET=$1
 
-        cd $CURRENT_PATH
-    #beaglebone busybox build
-    else
-        cd $BUSYBOX_PATH
-        source $CURRENT_PATH/setenv_crossCompiler.sh $1
-        make 
-        make install # output is by default placed in _install/
-
-        cd $CURRENT_PATH
-    fi
-else
-  # Do something if the argument is not equal to "foo" or "bar"
-  echo "The usage:
-            > ./busybox_build.sh <TARGET>
-            Target: bb or qemu
-            Ex. > ./busybox_build.sh bb"
+if [[ -z "$TARGET" ]]; then
+    echo "Usage: $0 <TARGET>"
+    echo "Targets: bb, qemu, rpi4"
+    exit 1
 fi
+
+CURRENT_PATH=$(pwd)
+BUSYBOX_PATH="$CURRENT_PATH/$TARGET/busybox"
+
+case "$TARGET" in
+    bb|qemu|rpi4)
+        source "$CURRENT_PATH/setenv_crossCompiler.sh" "$TARGET"
+        cd "$BUSYBOX_PATH" || exit 1
+        make 
+        make -j$(nproc)
+        make install
+        ;;
+    *)
+        echo "Unknown target: $TARGET"
+        exit 1
+        ;;
+esac
+
+cd "$CURRENT_PATH" || exit 1

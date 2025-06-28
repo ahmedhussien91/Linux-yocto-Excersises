@@ -1,32 +1,40 @@
 #!/bin/bash
-UBOOT_PATH="./$1/u-boot/"
-CURRENT_PATH="$PWD"
 
-if [[ "$1" == "bb" || "$1" == "qemu" ]]; then
-    # Do something if the argument is equal to "foo" or "bar"
-    echo "The TARGET is equal to $1"
-    #qemu u-boot build
-    if [ "$1" == "qemu" ]; then      
-        cd $UBOOT_PATH
-        source $CURRENT_PATH/setenv_crossCompiler.sh $1
-        make vexpress_ca9x4_defconfig
-        cp $CURRENT_PATH/qemu_vexpress_ca9x4_defconfig .config
-        make 
+TARGET=$1
 
-        cd $CURRENT_PATH
-    #beaglebone u-boot build
-    else
-        cd $UBOOT_PATH
-        source $CURRENT_PATH/setenv_crossCompiler.sh $1
-        make am335x_evm_defconfig
-        make
-
-        cd $CURRENT_PATH
-    fi
-else
-  # Do something if the argument is not equal to "foo" or "bar"
-  echo "The usage:
-            > ./uboot_build.sh <TARGET>
-            Target: bb or qemu
-            Ex. > ./uboot_build.sh bb"
+if [[ -z "$TARGET" ]]; then
+    echo "Usage: $0 <TARGET>"
+    echo "Targets: bb, qemu, rpi4"
+    exit 1
 fi
+
+CURRENT_PATH=$(pwd)
+UBOOT_PATH="$CURRENT_PATH/$TARGET/u-boot"
+
+case "$TARGET" in
+    bb)
+        source "$CURRENT_PATH/setenv_crossCompiler.sh" bb
+        cd "$UBOOT_PATH" || exit 1
+        make am335x_evm_defconfig
+        make -j$(nproc)
+        ;;
+    qemu)
+        source "$CURRENT_PATH/setenv_crossCompiler.sh" qemu
+        cd "$UBOOT_PATH" || exit 1
+        make vexpress_ca9x4_defconfig
+        make -j$(nproc)
+        ;;
+    rpi4)
+        source "$CURRENT_PATH/setenv_crossCompiler.sh" rpi4
+        cd "$UBOOT_PATH" || exit 1
+        make $CURRENT_PATH/rpi_4_mmc_1_2_defconfig
+        mkimage -C none -A arm -T script -d $CURRENT_PATH/rpi4_boot.cmd boot.scr
+        make -j$(nproc)
+        ;;
+    *)
+        echo "Unknown target: $TARGET"
+        exit 1
+        ;;
+esac
+
+cd "$CURRENT_PATH" || exit 1
