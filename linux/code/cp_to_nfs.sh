@@ -47,6 +47,7 @@ get_target_config() {
             TFTP_KERNEL_NAME="zImage_native_bb"
             NFS_DIR="/srv/nfs4/bb_busybox"
             TARGET_DIR="bb"
+            TOOLCHAIN_PREFIX="arm-cortex_a8-linux-gnueabihf"
             ;;
         rpi4)
             KERNEL_IMAGE="zImage"
@@ -54,6 +55,7 @@ get_target_config() {
             TFTP_KERNEL_NAME="zImage_native_rpi4"
             NFS_DIR="/srv/nfs4/rpi4_busybox"
             TARGET_DIR="rpi4"
+            TOOLCHAIN_PREFIX="aarch64-rpi4-linux-gnu"
             ;;
         qemu)
             KERNEL_IMAGE="zImage"
@@ -61,6 +63,7 @@ get_target_config() {
             TFTP_KERNEL_NAME="zImage_native_qemu"
             NFS_DIR="/srv/nfs4/qemu_busybox"
             TARGET_DIR="qemu"
+            TOOLCHAIN_PREFIX="arm-unknown-linux-gnueabi"
             ;;
         *)
             echo -e "${RED}Error: Unsupported target '$target'${NC}"
@@ -68,6 +71,28 @@ get_target_config() {
             return 1
             ;;
     esac
+}
+
+# Function to copy sysroot to NFS
+copy_sysroot() {
+    local target=$1
+    
+    # Find sysroot directory in the crosstool-ng build
+    SYSROOT_PATH="${HOME}/x-tools/${TOOLCHAIN_PREFIX}/${TOOLCHAIN_PREFIX}/sysroot"
+    
+    if [ -d "$SYSROOT_PATH" ]; then
+        echo -e "${GREEN}Copying sysroot from $SYSROOT_PATH to $NFS_DIR${NC}"
+        
+        # Copy sysroot contents to NFS directory
+        sudo cp -r "$SYSROOT_PATH"/* "$NFS_DIR/"
+        
+        # Ensure proper directory structure exists
+        sudo mkdir -p "$NFS_DIR"/{dev,proc,sys,tmp,var,run}
+        
+    else
+        echo -e "${YELLOW}Warning: Sysroot not found at $SYSROOT_PATH${NC}"
+        echo -e "${YELLOW}Skipping sysroot copy for $target${NC}"
+    fi
 }
 
 # Function to process a single target
@@ -89,7 +114,7 @@ process_target() {
     
     # Check if target directory exists
     if [ ! -d "${TARGET_DIR}" ]; then
-        echo -e "${RED}Error: Target directory 'code/${TARGET_DIR}' not found${NC}"
+        echo -e "${RED}Error: Target directory '${TARGET_DIR}' not found${NC}"
         return 1
     fi
     
@@ -119,21 +144,30 @@ process_target() {
         echo -e "${YELLOW}Warning: No DTB files found matching pattern '$DTB_PATTERN' in $DTB_BUILD_DIR${NC}"
     fi
     
-    # Copy BusyBox filesystem to NFS
+    # Clear existing NFS directory first
+    echo -e "${GREEN}Clearing existing NFS directory: $NFS_DIR${NC}"
+    sudo rm -rf "$NFS_DIR"/*
+    
+    # Copy sysroot first (base filesystem)
+    copy_sysroot "$target"
+    
+    # Copy BusyBox filesystem (overlay on top of sysroot)
     if [ -d "$BUSYBOX_BUILD_DIR" ]; then
         echo -e "${GREEN}Copying BusyBox filesystem to $NFS_DIR${NC}"
-        # Clear existing NFS directory and copy fresh content
-        sudo rm -rf "$NFS_DIR"/*
         sudo cp -r "$BUSYBOX_BUILD_DIR"/* "$NFS_DIR/"
-        
-        # Set proper permissions for NFS
-        echo -e "${GREEN}Setting NFS permissions for $target...${NC}"
-        sudo chown -R root:root "$NFS_DIR"
-        sudo chmod -R 755 "$NFS_DIR"
     else
-        echo -e "${RED}Error: BusyBox install directory not found: $BUSYBOX_BUILD_DIR${NC}"
-        return 1
+        echo -e "${YELLOW}Warning: BusyBox install directory not found: $BUSYBOX_BUILD_DIR${NC}"
+        echo -e "${YELLOW}Continuing with sysroot only...${NC}"
     fi
+    
+    # Set proper permissions for NFS
+    echo -e "${GREEN}Setting NFS permissions for $target...${NC}"
+    sudo chown -R nobody:nogroup "$NFS_DIR"
+    sudo chmod -R 755 "$NFS_DIR"
+    
+    # Fix some common directory permissions
+    sudo chmod 1777 "$NFS_DIR/tmp" 2>/dev/null || true
+    sudo chmod 755 "$NFS_DIR/var" 2>/dev/null || true
     
     echo -e "${GREEN}Target $target processed successfully!${NC}"
     echo ""
@@ -161,6 +195,7 @@ for target in "$@"; do
     get_target_config "$target"
     if [ -d "$NFS_DIR" ]; then
         echo -e "${GREEN}$NFS_DIR${NC}"
+        echo "Total size: $(du -sh "$NFS_DIR" | cut -f1)"
         ls -la "$NFS_DIR/" | head -5
         echo "..."
         echo ""
